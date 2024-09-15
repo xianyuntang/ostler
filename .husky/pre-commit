@@ -1,0 +1,4 @@
+# .husky/pre-commit
+npx lint-staged
+
+cd src-tauri && cargo clippy -- -D warnings

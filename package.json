@@ -8,7 +8,9 @@
     "dev": "vite",
     "build": "vite build",
     "serve": "vite preview",
-    "tauri": "tauri"
+    "tauri": "tauri",
+    "prepare": "husky",
+    "lint-staged": "lint-staged"
   },
   "license": "MIT",
   "dependencies": {
@@ -28,6 +30,8 @@
     "eslint-plugin-simple-import-sort": "^12.1.1",
     "eslint-plugin-solid": "^0.14.3",
     "globals": "^15.9.0",
+    "husky": "^9.1.6",
+    "lint-staged": "^15.2.10",
     "prettier": "^3.3.3",
     "typescript": "^5.2.2",
     "typescript-eslint": "^8.5.0",
