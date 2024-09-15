@@ -1,15 +1,27 @@
-import { AppBar, Box, Typography } from "@suid/material";
+import { Box, Container, createTheme } from "@suid/material";
+import { CssBaseline, ThemeProvider } from "@suid/material";
+import { ParentComponent } from "solid-js";
 
-function App() {
+import Header from "./components/header";
+import Sidebar from "./components/sidebar";
+
+const theme = createTheme({});
+
+const App: ParentComponent = (props) => {
   return (
-    <Box sx={{ width: "100vw", height: "100vh" }}>
-      <AppBar position="static">
-        <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-          News
-        </Typography>
-      </AppBar>
-    </Box>
+    <>
+      <CssBaseline />
+      <ThemeProvider theme={theme}>
+        <Box sx={{ height: "100vh", width: "100vw" }}>
+          <Header />
+          <Box sx={{ display: "flex" }}>
+            <Sidebar />
+            <Container>{props.children}</Container>
+          </Box>
+        </Box>
+      </ThemeProvider>
+    </>
   );
-}
+};
 
 export default App;
