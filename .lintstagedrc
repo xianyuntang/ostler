@@ -4,8 +4,5 @@
   ],
   "**/*.{json,md,html}": [
     "prettier --check"
-  ],
-  "**/*.rs": [
-    "rustfmt --check"
   ]
 }

@@ -2200,13 +2200,13 @@ dependencies = [
 name = "ostler"
 version = "0.1.0"
 dependencies = [
- "anyhow",
  "k8s-openapi",
  "kube",
  "serde",
  "serde_json",
  "tauri",
  "tauri-build",
+ "thiserror",
 ]
 
 [[package]]

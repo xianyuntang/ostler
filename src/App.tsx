@@ -1,24 +1,21 @@
-import { Box, Container, createTheme } from "@suid/material";
+import { createTheme } from "@suid/material";
 import { CssBaseline, ThemeProvider } from "@suid/material";
+import { QueryClient, QueryClientProvider } from "@tanstack/solid-query";
 import { ParentComponent } from "solid-js";
 
-import Header from "./components/header";
-import Sidebar from "./components/sidebar";
+import Layout from "./components/layout";
 
 const theme = createTheme({});
+const queryClient = new QueryClient();
 
 const App: ParentComponent = (props) => {
   return (
     <>
       <CssBaseline />
       <ThemeProvider theme={theme}>
-        <Box sx={{ height: "100vh", width: "100vw" }}>
-          <Header />
-          <Box sx={{ display: "flex" }}>
-            <Sidebar />
-            <Container>{props.children}</Container>
-          </Box>
-        </Box>
+        <QueryClientProvider client={queryClient}>
+          <Layout>{props.children}</Layout>
+        </QueryClientProvider>
       </ThemeProvider>
     </>
   );
