@@ -1,6 +1,6 @@
 import { invoker } from "../core";
 
-export const listNamespace = async () => {
+export const listDeployments = async () => {
   return invoker<
     {
       apiVersion: string;
@@ -11,7 +11,7 @@ export const listNamespace = async () => {
         labels: Record<string, string>;
         creationTimestamp: string;
       };
-      status: { phase: string };
+      status: { readyReplicas: number | null; replicas: number | null };
     }[]
-  >("list_namespaces");
+  >("list_deployments");
 };

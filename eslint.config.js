@@ -1,5 +1,5 @@
 import pluginJs from "@eslint/js";
-import eslintPluginPrettierRecommended from "eslint-plugin-prettier/recommended";
+import eslintConfigPrettier from "eslint-config-prettier";
 import simpleImportSort from "eslint-plugin-simple-import-sort";
 import solidRecommended from "eslint-plugin-solid/configs/recommended";
 import globals from "globals";
@@ -10,7 +10,7 @@ export default [
   { languageOptions: { globals: globals.browser } },
   pluginJs.configs.recommended,
   ...tseslint.configs.recommended,
-  eslintPluginPrettierRecommended,
+  eslintConfigPrettier,
   solidRecommended,
   {
     plugins: {

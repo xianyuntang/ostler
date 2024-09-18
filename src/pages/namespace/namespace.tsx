@@ -8,6 +8,7 @@ import {
   TableRow,
 } from "@suid/material";
 import { createQuery } from "@tanstack/solid-query";
+import dayjs from "dayjs";
 import { For, Match, Switch } from "solid-js";
 
 import { namespaceService } from "../../services";
@@ -34,6 +35,7 @@ const Namespace = () => {
                 <TableRow>
                   <TableCell>Name</TableCell>
                   <TableCell>Status</TableCell>
+                  <TableCell>Created time</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -44,6 +46,9 @@ const Namespace = () => {
                     >
                       <TableCell>{row.metadata.name}</TableCell>
                       <TableCell>{row.status.phase}</TableCell>
+                      <TableCell>
+                        {dayjs(row.metadata.creationTimestamp).toString()}
+                      </TableCell>
                     </TableRow>
                   )}
                 </For>
