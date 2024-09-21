@@ -12,8 +12,8 @@ import { createQuery } from "@tanstack/solid-query";
 import dayjs from "dayjs";
 import { For, Match, Switch } from "solid-js";
 
-import { deploymentService } from "../../services";
-import { useKubeStore } from "../../stores";
+import { deploymentService } from "../../../services";
+import { useKubeStore } from "../../../stores";
 
 const Deployment = () => {
   const context = useKubeStore((state) => state.context);

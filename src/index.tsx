@@ -3,14 +3,14 @@ import { Route, Router } from "@solidjs/router";
 import { render } from "solid-js/web";
 
 import App from "./App";
-import Deployment from "./pages/deployment";
-import Pod from "./pages/pod";
+import DeploymentPage from "./pages/deployment.page";
+import PodPage from "./pages/pod.page";
 
 render(
   () => (
     <Router root={App}>
-      <Route path="/deployment" component={Deployment} />
-      <Route path="/pod" component={Pod} />
+      <Route path="/deployment" component={DeploymentPage} />
+      <Route path="/pod" component={PodPage} />
     </Router>
   ),
   document.getElementById("root") as HTMLElement
