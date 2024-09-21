@@ -8,6 +8,7 @@ use crate::domain::resources::client_manager::ClientManager;
 use crate::domain::resources::context::{list_contexts, switch_context};
 use crate::domain::resources::deployment::list_deployments;
 use crate::domain::resources::namespace::list_namespaces;
+use crate::domain::resources::pod::list_pods;
 use crate::infrastructure::app::AppData;
 use tauri::async_runtime::Mutex;
 
@@ -21,7 +22,8 @@ fn main() {
             list_namespaces,
             list_deployments,
             list_contexts,
-            switch_context
+            switch_context,
+            list_pods,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

@@ -1,5 +1,7 @@
+import Pod from "../components/resources/pod";
+
 const PodPage = () => {
-  return <div>Pod Page</div>;
+  return <Pod />;
 };
 
 export default PodPage;

@@ -15,7 +15,7 @@
   "license": "MIT",
   "dependencies": {
     "@solidjs/router": "^0.14.5",
-    "@suid/icons-material": "^0.8.0",
+    "@suid/icons-material": "^0.8.1",
     "@suid/material": "^0.17.0",
     "@tanstack/solid-query": "^5.56.2",
     "@tauri-apps/api": "^1",
