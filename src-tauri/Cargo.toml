@@ -17,6 +17,9 @@ serde_json = "1"
 kube = { version = "0", features = ["runtime", "derive"] }
 k8s-openapi = { version = "0", features = ["latest"] }
 thiserror = "1.0.63"
+tracing = "0.1.40"
+tracing-subscriber = "0.3.18"
+tokio = "1.40.0"
 
 
 

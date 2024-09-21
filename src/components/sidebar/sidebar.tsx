@@ -9,7 +9,7 @@ import {
 } from "@suid/material";
 import { For } from "solid-js";
 
-import ClusterPicker from "./cluster-picker/cluster-picker.tsx";
+import ContextPicker from "./context-picker";
 
 const SIDEBAR_MENUS = [
   { displayText: "Namespace", path: "/namespace" },
@@ -25,10 +25,10 @@ const Sidebar = () => {
   };
 
   return (
-    <Box sx={{ width: "15em" }}>
+    <Box sx={{ width: "20em", maxWidth: "20em" }}>
       <List>
         <ListItem>
-          <ClusterPicker />
+          <ContextPicker />
         </ListItem>
         <For each={SIDEBAR_MENUS}>
           {(item) => (

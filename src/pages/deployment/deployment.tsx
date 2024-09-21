@@ -13,10 +13,13 @@ import dayjs from "dayjs";
 import { For, Match, Switch } from "solid-js";
 
 import { deploymentService } from "../../services";
+import { useKubeContextStore } from "../../stores";
 
 const Deployment = () => {
+  const context = useKubeContextStore((state) => state.context);
+
   const query = createQuery(() => ({
-    queryKey: ["deployments"],
+    queryKey: [context()],
     queryFn: deploymentService.listDeployments,
   }));
 
@@ -60,7 +63,7 @@ const Deployment = () => {
                         sx={{
                           color: getReadyColor(
                             row.status.readyReplicas || 0,
-                            row.status.replicas || 0
+                            row.status.replicas || 0,
                           ),
                         }}
                       >

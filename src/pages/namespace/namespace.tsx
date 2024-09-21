@@ -12,10 +12,13 @@ import dayjs from "dayjs";
 import { For, Match, Switch } from "solid-js";
 
 import { namespaceService } from "../../services";
+import { useKubeContextStore } from "../../stores";
 
 const Namespace = () => {
+  const context = useKubeContextStore((state) => state.context);
+
   const query = createQuery(() => ({
-    queryKey: ["namespaces"],
+    queryKey: [context()],
     queryFn: namespaceService.listNamespace,
   }));
 
