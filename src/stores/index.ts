@@ -1,1 +1,1 @@
-export * from "./use-kube-context.ts";
+export * from "./use-kube.ts";

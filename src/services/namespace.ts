@@ -1,17 +1,5 @@
 import { invoker } from "../core";
 
-export const listNamespace = async () => {
-  return invoker<
-    {
-      apiVersion: string;
-      Kind: string;
-      metadata: {
-        name: string;
-        uid: string;
-        labels: Record<string, string>;
-        creationTimestamp: string;
-      };
-      status: { phase: string };
-    }[]
-  >("list_namespaces");
+export const listNamespaces = async () => {
+  return invoker<string[]>("list_namespaces");
 };

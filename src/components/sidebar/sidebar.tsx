@@ -12,7 +12,6 @@ import { For } from "solid-js";
 import ContextPicker from "./context-picker";
 
 const SIDEBAR_MENUS = [
-  { displayText: "Namespace", path: "/namespace" },
   { displayText: "Deployment", path: "/deployment" },
   { displayText: "Pod", path: "/pod" },
 ];

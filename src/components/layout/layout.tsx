@@ -3,6 +3,7 @@ import { ParentComponent } from "solid-js";
 
 import Header from "../header";
 import Sidebar from "../sidebar";
+import NamespacePicker from "./namespace-picker";
 
 const Layout: ParentComponent = (props) => {
   return (
@@ -16,6 +17,7 @@ const Layout: ParentComponent = (props) => {
       >
         <Sidebar />
         <Container sx={{ overflow: "scroll", margin: "8px" }}>
+          <NamespacePicker />
           {props.children}
         </Container>
       </Box>

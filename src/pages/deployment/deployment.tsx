@@ -13,13 +13,14 @@ import dayjs from "dayjs";
 import { For, Match, Switch } from "solid-js";
 
 import { deploymentService } from "../../services";
-import { useKubeContextStore } from "../../stores";
+import { useKubeStore } from "../../stores";
 
 const Deployment = () => {
-  const context = useKubeContextStore((state) => state.context);
+  const context = useKubeStore((state) => state.context);
+  const namespace = useKubeStore((state) => state.namespace);
 
   const query = createQuery(() => ({
-    queryKey: [context()],
+    queryKey: ["listDeployments", context()],
     queryFn: deploymentService.listDeployments,
   }));
 
@@ -31,6 +32,12 @@ const Deployment = () => {
     } else {
       return green[500];
     }
+  };
+
+  const deployments = () => {
+    return query.data?.filter(
+      (row) => row.metadata.namespace === namespace() || namespace() === ""
+    );
   };
 
   return (
@@ -53,7 +60,7 @@ const Deployment = () => {
                 </TableRow>
               </TableHead>
               <TableBody>
-                <For each={query.data}>
+                <For each={deployments()}>
                   {(row) => (
                     <TableRow
                       sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
@@ -63,7 +70,7 @@ const Deployment = () => {
                         sx={{
                           color: getReadyColor(
                             row.status.readyReplicas || 0,
-                            row.status.replicas || 0,
+                            row.status.replicas || 0
                           ),
                         }}
                       >

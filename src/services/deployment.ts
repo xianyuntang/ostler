@@ -10,6 +10,7 @@ export const listDeployments = async () => {
         uid: string;
         labels: Record<string, string>;
         creationTimestamp: string;
+        namespace: string;
       };
       status: { readyReplicas: number | null; replicas: number | null };
     }[]

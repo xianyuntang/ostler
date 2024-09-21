@@ -20,7 +20,6 @@ pub async fn list_deployments(state: State<'_, Mutex<AppData>>) -> Result<Respon
         .items
         .into_iter()
         .collect::<Vec<_>>();
-
     Ok(Response {
         data: json!(deployments),
     })
