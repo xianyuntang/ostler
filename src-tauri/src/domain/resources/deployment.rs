@@ -1,5 +1,5 @@
 use crate::infrastructure::app::AppData;
-use crate::infrastructure::error::Error;
+use crate::infrastructure::error::ApiError;
 use crate::infrastructure::response::Response;
 use k8s_openapi::api::apps::v1::Deployment;
 use kube::api::ListParams;
@@ -12,7 +12,7 @@ use tauri::State;
 pub async fn list_deployments(
     state: State<'_, Mutex<AppData>>,
     namespace: &str,
-) -> Result<Response, Error> {
+) -> Result<Response, ApiError> {
     tracing::info!("list_deployments called");
 
     let client = state.lock().await.client_manager.get_client().await;

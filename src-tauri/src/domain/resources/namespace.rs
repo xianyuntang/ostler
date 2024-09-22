@@ -1,5 +1,5 @@
 use crate::infrastructure::app::AppData;
-use crate::infrastructure::error::Error;
+use crate::infrastructure::error::ApiError;
 use crate::infrastructure::response::Response;
 use k8s_openapi::api::core::v1::Namespace;
 use kube::api::ListParams;
@@ -10,7 +10,7 @@ use tauri::State;
 use tracing;
 
 #[tauri::command]
-pub async fn list_namespaces(state: State<'_, Mutex<AppData>>) -> Result<Response, Error> {
+pub async fn list_namespaces(state: State<'_, Mutex<AppData>>) -> Result<Response, ApiError> {
     tracing::info!("list_namespaces called");
 
     let app_data = state.lock().await;

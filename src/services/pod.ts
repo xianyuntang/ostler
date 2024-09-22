@@ -1,4 +1,5 @@
 import { invoker } from "../core";
+
 export interface Pod {
   apiVersion: string;
   Kind: string;
@@ -16,8 +17,13 @@ export interface Pod {
       restartCount: number;
     }[];
   };
+  spec: {
+    containers: {
+      ports?: { containerPort: number; name: string; protocol: string }[];
+    }[];
+  };
 }
+
 export const listPods = async (namespace: string) => {
-  const r = await invoker<Pod[]>("list_pods", { namespace });
-  return r;
+  return invoker<Pod[]>("list_pods", { namespace });
 };

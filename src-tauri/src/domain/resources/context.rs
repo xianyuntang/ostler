@@ -1,12 +1,12 @@
 use crate::infrastructure::app::AppData;
-use crate::infrastructure::error::Error;
+use crate::infrastructure::error::ApiError;
 use crate::infrastructure::response::Response;
 use serde_json::json;
 use tauri::async_runtime::Mutex;
 use tauri::State;
 
 #[tauri::command]
-pub async fn list_contexts(state: State<'_, Mutex<AppData>>) -> Result<Response, Error> {
+pub async fn list_contexts(state: State<'_, Mutex<AppData>>) -> Result<Response, ApiError> {
     tracing::info!("list_contexts called");
 
     let app_data = state.lock().await;
@@ -23,7 +23,7 @@ pub async fn list_contexts(state: State<'_, Mutex<AppData>>) -> Result<Response,
 pub async fn switch_context(
     state: State<'_, Mutex<AppData>>,
     context: String,
-) -> Result<Response, Error> {
+) -> Result<Response, ApiError> {
     tracing::info!("switch_context called");
 
     let mut app_data = state.lock().await;

@@ -15,6 +15,7 @@ import { For, Match, Switch } from "solid-js";
 import { podService } from "../../../services";
 import { useKubeStore } from "../../../stores";
 import ContainerStatus from "./container-status";
+import PodActions from "./pod-actions";
 
 const Pod = () => {
   const context = useKubeStore((state) => state.context);
@@ -27,7 +28,7 @@ const Pod = () => {
 
   const deployments = () => {
     return query.data?.filter(
-      (row) => row.metadata.namespace === namespace() || namespace() === ""
+      (row) => row.metadata.namespace === namespace() || namespace() === "",
     );
   };
 
@@ -45,6 +46,7 @@ const Pod = () => {
             <Table>
               <TableHead>
                 <TableRow>
+                  <TableCell sx={{ width: "5em" }}>Actions</TableCell>
                   <TableCell sx={{ width: "20em" }}>Name</TableCell>
                   <TableCell sx={{ width: "10em" }}>Status</TableCell>
                   <TableCell>Created time</TableCell>
@@ -56,6 +58,9 @@ const Pod = () => {
                     <TableRow
                       sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
                     >
+                      <TableCell>
+                        <PodActions pod={row} />
+                      </TableCell>
                       <TableCell>{row.metadata.name}</TableCell>
                       <TableCell>
                         <For each={row.status.containerStatuses}>

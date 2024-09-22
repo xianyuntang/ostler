@@ -14,12 +14,15 @@ tauri-build = { version = "1", features = [] }
 tauri = { version = "1", features = ["shell-open"] }
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
-kube = { version = "0", features = ["runtime", "derive"] }
-k8s-openapi = { version = "0", features = ["latest"] }
+kube = { version = "0.95.0", features = ["runtime", "derive", "ws"] }
+k8s-openapi = { version = "0.23.0", features = ["latest"] }
 thiserror = "1.0.63"
 tracing = "0.1.40"
 tracing-subscriber = "0.3.18"
 tokio = "1.40.0"
+dashmap = "6.1.0"
+
+
 
 
 
