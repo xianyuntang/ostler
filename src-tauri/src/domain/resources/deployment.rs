@@ -23,6 +23,7 @@ pub async fn list_deployments(
         .items
         .into_iter()
         .collect::<Vec<_>>();
+
     Ok(Response {
         data: json!(deployments),
     })

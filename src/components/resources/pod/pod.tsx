@@ -28,7 +28,7 @@ const Pod = () => {
 
   const deployments = () => {
     return query.data?.filter(
-      (row) => row.metadata.namespace === namespace() || namespace() === "",
+      (row) => row.metadata.namespace === namespace() || namespace() === ""
     );
   };
 

@@ -22,7 +22,7 @@ pub async fn list_contexts(state: State<'_, Mutex<AppData>>) -> Result<Response,
 #[tauri::command]
 pub async fn switch_context(
     state: State<'_, Mutex<AppData>>,
-    context: String,
+    context: &str,
 ) -> Result<Response, ApiError> {
     tracing::info!("switch_context called");
 

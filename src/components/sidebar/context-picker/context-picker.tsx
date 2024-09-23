@@ -9,6 +9,7 @@ import { useKubeStore } from "../../../stores";
 const ContextPicker = () => {
   const context = useKubeStore((state) => state.context);
   const setContext = useKubeStore((state) => state.setContext);
+
   const setNamespace = useKubeStore((state) => state.setNamespace);
 
   const query = createQuery(() => ({

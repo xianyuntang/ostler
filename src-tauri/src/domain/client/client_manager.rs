@@ -3,7 +3,7 @@ use kube::{Client, Config};
 
 pub struct ClientManager {
     kubeconfig: Kubeconfig,
-    current_context: String,
+    current_kubeconfig_index: usize,
 }
 
 impl ClientManager {
@@ -14,7 +14,7 @@ impl ClientManager {
 
         Self {
             kubeconfig: kubeconfig.clone(),
-            current_context: kubeconfig.current_context.unwrap(),
+            current_kubeconfig_index: 0,
         }
     }
 }
@@ -29,17 +29,38 @@ impl ClientManager {
     }
 
     pub fn get_current_context(&self) -> String {
-        self.current_context.clone()
+        self.kubeconfig.contexts[self.current_kubeconfig_index]
+            .name
+            .clone()
     }
 
-    pub async fn switch_context(&mut self, context: String) {
+    pub async fn switch_context(&mut self, context: &str) {
         tracing::info!("KUBECONFIG {} has been loaded", context);
-        self.current_context = context;
+        if let Some((index, _)) = self
+            .kubeconfig
+            .contexts
+            .iter()
+            .enumerate()
+            .find(|(_, named_context)| named_context.name == context)
+        {
+            self.current_kubeconfig_index = index;
+        }
     }
+}
 
+impl ClientManager {
     pub async fn get_client(&self) -> Client {
         let kubeconfig_option = KubeConfigOptions {
-            context: Some(self.current_context.clone()),
+            context: Some(
+                self.kubeconfig.contexts[self.current_kubeconfig_index]
+                    .name
+                    .clone(),
+            ),
+            cluster: Some(
+                self.kubeconfig.clusters[self.current_kubeconfig_index]
+                    .name
+                    .clone(),
+            ),
             ..KubeConfigOptions::default()
         };
 
