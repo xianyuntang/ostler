@@ -10,6 +10,7 @@ import {
 import { For } from "solid-js";
 
 import ContextPicker from "./context-picker";
+import NamespacePicker from "./namespace-picker";
 
 const SIDEBAR_MENUS = [
   { displayText: "Deployment", path: "/deployment" },
@@ -28,6 +29,9 @@ const Sidebar = () => {
       <List>
         <ListItem>
           <ContextPicker />
+        </ListItem>
+        <ListItem>
+          <NamespacePicker />
         </ListItem>
         <For each={SIDEBAR_MENUS}>
           {(item) => (
