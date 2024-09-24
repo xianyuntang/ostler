@@ -9,7 +9,7 @@ use crate::domain::portforward::portforward_manager::PortforwardManager;
 use crate::domain::resources::context::{list_contexts, switch_context};
 use crate::domain::resources::deployment::list_deployments;
 use crate::domain::resources::namespace::list_namespaces;
-use crate::domain::resources::pod::list_pods;
+use crate::domain::resources::pod::{get_pod_logs, list_pods};
 use crate::domain::resources::portforward::{start_portforward, stop_portforward};
 use crate::infrastructure::app::AppData;
 use tauri::async_runtime::Mutex;
@@ -27,8 +27,9 @@ fn main() {
             list_contexts,
             switch_context,
             list_pods,
+            get_pod_logs,
             start_portforward,
-            stop_portforward
+            stop_portforward,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

@@ -17,7 +17,8 @@ import { Pod } from "../../../../../services/pod.ts";
 import { useKubeStore, usePortforwardStore } from "../../../../../stores";
 
 interface PortforwardActionProps {
-  name: string;
+  podName: string;
+  containerName: string;
   ports: Pod["spec"]["containers"][0]["ports"];
 }
 
@@ -35,6 +36,8 @@ const PortforwardAction: Component<PortforwardActionProps> = (props) => {
 
   const defaultContainerPort = () => props.ports?.[0].containerPort;
 
+  const pfName = () => `${props.podName}/${props.containerName}`;
+
   onMount(() => {
     const port = defaultContainerPort();
     if (port) {
@@ -43,35 +46,35 @@ const PortforwardAction: Component<PortforwardActionProps> = (props) => {
     }
   });
 
-  const handleClose = () => {
-    setOpen(false);
-  };
-
   const handleOpen = async () => {
-    if (portforward()[props.name]) {
-      await portforwardService.stop_portforward(props.name);
-      remove(props.name);
+    if (portforward()[pfName()]) {
+      await portforwardService.stop_portforward(props.podName);
+      remove(pfName());
     } else {
       setOpen(true);
     }
+  };
+
+  const handleClose = () => {
+    setOpen(false);
   };
 
   const handlePortforwardClick = async () => {
     await portforwardService.start_portforward(
       namespace(),
       "pod",
-      props.name,
+      props.podName,
       parseInt(containerPort()),
-      parseInt(localPort())
+      parseInt(localPort()),
     );
-    add(props.name);
+    add(pfName());
     setOpen(false);
   };
 
   const getButtonColor = () => {
     if (!defaultContainerPort()) {
       return grey[500];
-    } else if (portforward()[props.name]) {
+    } else if (portforward()[pfName()]) {
       return green[500];
     } else {
       return red[500];

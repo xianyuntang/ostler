@@ -7,17 +7,22 @@ import {
   TableContainer,
   TableHead,
   TableRow,
+  Typography,
 } from "@suid/material";
 import { createQuery } from "@tanstack/solid-query";
 import dayjs from "dayjs";
-import { For, Match, Switch } from "solid-js";
+import { createSignal, For, Match, Show, Switch } from "solid-js";
 
 import { podService } from "../../../services";
 import { useKubeStore } from "../../../stores";
 import ContainerStatus from "./container-status";
-import PodActions from "./pod-actions";
+import PodDetail from "./pod-detail";
 
-const Pod = () => {
+const PodList = () => {
+  const [podDetailOpen, setPodDetailOpen] = createSignal<boolean>(false);
+  const [selectedPod, setSelectedPod] = createSignal<podService.Pod | null>(
+    null,
+  );
   const context = useKubeStore((state) => state.context);
   const namespace = useKubeStore((state) => state.namespace);
 
@@ -26,10 +31,19 @@ const Pod = () => {
     queryFn: () => podService.listPods(namespace()),
   }));
 
-  const deployments = () => {
+  const pods = () => {
     return query.data?.filter(
-      (row) => row.metadata.namespace === namespace() || namespace() === ""
+      (pod) => pod.metadata.namespace === namespace() || namespace() === "",
     );
+  };
+
+  const handleRowClick = (pod: podService.Pod) => {
+    setPodDetailOpen(true);
+    setSelectedPod(pod);
+  };
+
+  const handlePodDetailClose = () => {
+    setPodDetailOpen(false);
   };
 
   return (
@@ -39,31 +53,25 @@ const Pod = () => {
           <LinearProgress />
         </Match>
         <Match when={query.isError}>
-          <p>Error: {query.error?.message}</p>
+          <Typography>Error: {query.error?.message}</Typography>
         </Match>
         <Match when={query.isSuccess}>
           <TableContainer>
             <Table>
               <TableHead>
                 <TableRow>
-                  <TableCell sx={{ width: "5em" }}>Actions</TableCell>
                   <TableCell sx={{ width: "20em" }}>Name</TableCell>
                   <TableCell sx={{ width: "10em" }}>Status</TableCell>
                   <TableCell>Created time</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
-                <For each={deployments()}>
-                  {(row) => (
-                    <TableRow
-                      sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-                    >
+                <For each={pods()}>
+                  {(pod) => (
+                    <TableRow onclick={() => handleRowClick(pod)}>
+                      <TableCell>{pod.metadata.name}</TableCell>
                       <TableCell>
-                        <PodActions pod={row} />
-                      </TableCell>
-                      <TableCell>{row.metadata.name}</TableCell>
-                      <TableCell>
-                        <For each={row.status.containerStatuses}>
+                        <For each={pod.status.containerStatuses}>
                           {(containerStatus) => (
                             <ContainerStatus
                               containerStatus={containerStatus}
@@ -72,7 +80,7 @@ const Pod = () => {
                         </For>
                       </TableCell>
                       <TableCell>
-                        {dayjs(row.metadata.creationTimestamp).toString()}
+                        {dayjs(pod.metadata.creationTimestamp).toString()}
                       </TableCell>
                     </TableRow>
                   )}
@@ -80,10 +88,19 @@ const Pod = () => {
               </TableBody>
             </Table>
           </TableContainer>
+          <Show when={selectedPod()} keyed>
+            {(pod) => (
+              <PodDetail
+                open={podDetailOpen()}
+                pod={pod}
+                onClose={handlePodDetailClose}
+              />
+            )}
+          </Show>
         </Match>
       </Switch>
     </Box>
   );
 };
 
-export default Pod;
+export default PodList;

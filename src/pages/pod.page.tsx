@@ -1,7 +1,7 @@
-import Pod from "../components/resources/pod";
+import PodList from "../components/resources/pod-list";
 
 const PodPage = () => {
-  return <Pod />;
+  return <PodList />;
 };
 
 export default PodPage;
