@@ -34,6 +34,7 @@ const LogAction: Component<LogActionProps> = (props) => {
     enabled: open(),
     refetchInterval: 500,
   }));
+
   const handleOpen = async () => {
     setOpen(true);
   };

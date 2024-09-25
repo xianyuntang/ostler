@@ -1,8 +1,8 @@
+use crate::domain::client::api_helper::get_api;
 use crate::infrastructure::app::AppData;
 use crate::infrastructure::error::ApiError;
 use crate::infrastructure::response::Response;
 use k8s_openapi::api::core::v1::Pod;
-use kube::Api;
 use serde_json::json;
 
 use tauri::async_runtime::Mutex;
@@ -25,7 +25,7 @@ pub async fn start_portforward(
     let portforward_manager = &app_data.portforward_manager;
 
     if resource == "pod" {
-        let api = Api::<Pod>::namespaced(client.clone(), namespace);
+        let api = get_api::<Pod>(client.clone(), namespace);
         portforward_manager
             .start_portforward(api, name.to_string(), container_port, local_port)
             .await?;

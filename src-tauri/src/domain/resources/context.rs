@@ -29,9 +29,9 @@ pub async fn switch_context(
     let mut app_data = state.lock().await;
     let client_manager = &mut app_data.client_manager;
 
-    client_manager.switch_context(context).await;
+    let names_context = client_manager.switch_context(context).await;
 
     Ok(Response {
-        data: json!({"message":"ok"}),
+        data: json!({"namedContext":names_context}),
     })
 }

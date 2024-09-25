@@ -16,13 +16,14 @@ export interface Pod {
       ready: boolean;
       restartCount: number;
       image: string;
+      state: Record<string, string>;
     }[];
   };
   spec: {
     containers: {
       name: string;
       args: string[];
-      env: {
+      env?: {
         name: string;
         value?: string;
         valueFrom?: { secretKeyRef: { key: string; name: string } };

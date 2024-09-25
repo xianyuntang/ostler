@@ -16,5 +16,5 @@ export const useKubeStore = createWithSignal<KubeState & KubeActions>(
     namespace: "",
     setContext: (context) => set(() => ({ context: context })),
     setNamespace: (namespace) => set(() => ({ namespace: namespace })),
-  }),
+  })
 );

@@ -9,9 +9,9 @@ import PodPage from "./pages/pod.page";
 render(
   () => (
     <Router root={App}>
-      <Route path="/deployment" component={DeploymentPage} />
-      <Route path="/pod" component={PodPage} />
+      <Route path="/workload/deployment" component={DeploymentPage} />
+      <Route path="/workload/pod" component={PodPage} />
     </Router>
   ),
-  document.getElementById("root") as HTMLElement
+  document.getElementById("root") as HTMLElement,
 );

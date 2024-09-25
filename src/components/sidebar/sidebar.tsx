@@ -13,8 +13,13 @@ import ContextPicker from "./context-picker";
 import NamespacePicker from "./namespace-picker";
 
 const SIDEBAR_MENUS = [
-  { displayText: "Deployment", path: "/deployment" },
-  { displayText: "Pod", path: "/pod" },
+  {
+    name: "Workload",
+    resources: [
+      { displayText: "Deployment", path: "/workload/deployment" },
+      { displayText: "Pod", path: "/workload/pod" },
+    ],
+  },
 ];
 
 const Sidebar = () => {
@@ -35,12 +40,26 @@ const Sidebar = () => {
         </ListItem>
         <For each={SIDEBAR_MENUS}>
           {(item) => (
-            <ListItem disablePadding>
-              <ListItemButton onClick={() => handleListItemClick(item.path)}>
-                <ListItemIcon />
-                <ListItemText primary={item.displayText} />
-              </ListItemButton>
-            </ListItem>
+            <List>
+              <ListItem disablePadding>
+                <ListItemButton>
+                  <ListItemIcon />
+                  <ListItemText primary={item.name} />
+                </ListItemButton>
+              </ListItem>
+              <For each={item.resources}>
+                {(resource) => (
+                  <ListItem>
+                    <ListItemButton
+                      onclick={() => handleListItemClick(resource.path)}
+                    >
+                      <ListItemIcon />
+                      <ListItemText primary={resource.displayText} />
+                    </ListItemButton>
+                  </ListItem>
+                )}
+              </For>
+            </List>
           )}
         </For>
       </List>

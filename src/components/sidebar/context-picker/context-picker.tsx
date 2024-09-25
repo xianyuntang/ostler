@@ -1,7 +1,7 @@
 import { FormControl, InputLabel, MenuItem, Select } from "@suid/material";
 import { SelectChangeEvent } from "@suid/material/Select";
 import { createQuery } from "@tanstack/solid-query";
-import { createEffect, For, Show } from "solid-js";
+import { createEffect, createSignal, For, Show } from "solid-js";
 
 import { contextService } from "../../../services";
 import { useKubeStore } from "../../../stores";
@@ -9,8 +9,8 @@ import { useKubeStore } from "../../../stores";
 const ContextPicker = () => {
   const context = useKubeStore((state) => state.context);
   const setContext = useKubeStore((state) => state.setContext);
-
   const setNamespace = useKubeStore((state) => state.setNamespace);
+  const [shouldRender, setShouldRender] = createSignal<boolean>(false);
 
   const query = createQuery(() => ({
     queryKey: ["contexts"],
@@ -18,19 +18,38 @@ const ContextPicker = () => {
   }));
 
   createEffect(() => {
-    if (query.isSuccess) {
-      setContext(query.data.current);
+    if (query.isFetching) {
+      setShouldRender(false);
+    } else if (query.isSuccess) {
+      setShouldRender(true);
+      setContext(query.data?.current.name || "");
+      setNamespace(query.data?.current.context.namespace || "");
     }
   });
 
   const handleClusterChange = async (event: SelectChangeEvent) => {
-    await contextService.switchContext(event.target.value);
-    setContext(event.target.value);
-    setNamespace("");
+    const response = await contextService.switchContext(event.target.value);
+    setContext(response.namedContext.name);
+    setNamespace(response.namedContext.context.namespace);
   };
 
   return (
-    <Show when={query.data}>
+    <Show
+      when={shouldRender()}
+      fallback={
+        <FormControl variant="standard" fullWidth>
+          <InputLabel id="select-cluster-label">Context</InputLabel>
+          <Select
+            labelId="select-cluster-label"
+            label="Cluster"
+            value={context()}
+            onChange={handleClusterChange}
+          >
+            <MenuItem value="" />
+          </Select>
+        </FormControl>
+      }
+    >
       <FormControl variant="standard" fullWidth>
         <InputLabel id="select-cluster-label">Context</InputLabel>
         <Select
@@ -39,14 +58,9 @@ const ContextPicker = () => {
           value={context()}
           onChange={handleClusterChange}
         >
-          <MenuItem value="">
-            <em>None</em>
-          </MenuItem>
-          <Show when={query.isSuccess}>
-            <For each={query.data?.contexts}>
-              {(row) => <MenuItem value={row}>{row}</MenuItem>}
-            </For>
-          </Show>
+          <For each={query.data?.contexts ?? []}>
+            {(row) => <MenuItem value={row.name}>{row.name}</MenuItem>}
+          </For>
         </Select>
       </FormControl>
     </Show>

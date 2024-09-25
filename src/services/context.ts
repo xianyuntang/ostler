@@ -1,10 +1,19 @@
 import { invoker } from "../core";
-import { OkMessage } from "./constant.ts";
+
+export interface NamedContext {
+  context: { cluste: string; user: string; namespace: string };
+  name: string;
+}
 
 export const listContexts = async () => {
-  return invoker<{ contexts: string[]; current: string }>("list_contexts");
+  return invoker<{
+    contexts: NamedContext[];
+    current: NamedContext;
+  }>("list_contexts");
 };
 
 export const switchContext = async (context: string) => {
-  return invoker<OkMessage>("switch_context", { context: context });
+  return invoker<{ namedContext: NamedContext }>("switch_context", {
+    context: context,
+  });
 };

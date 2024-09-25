@@ -3,9 +3,9 @@ use crate::infrastructure::error::ApiError;
 use crate::infrastructure::response::Response;
 use k8s_openapi::api::core::v1::Pod;
 use kube::api::{ListParams, LogParams};
-use kube::Api;
 use serde_json::json;
 
+use crate::domain::client::api_helper::get_api;
 use tauri::async_runtime::Mutex;
 use tauri::State;
 
@@ -18,7 +18,9 @@ pub async fn list_pods(
 
     let client = state.lock().await.client_manager.get_client().await;
 
-    let pods = Api::<Pod>::namespaced(client, namespace)
+    let api = get_api::<Pod>(client, namespace);
+
+    let pods = api
         .list(&ListParams::default())
         .await?
         .items
@@ -39,7 +41,9 @@ pub async fn get_pod_logs(
 
     let client = state.lock().await.client_manager.get_client().await;
 
-    let logs = Api::<Pod>::namespaced(client, namespace)
+    let api = get_api::<Pod>(client, namespace);
+
+    let logs = api
         .logs(
             pod_name,
             &LogParams {

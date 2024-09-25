@@ -1,4 +1,4 @@
-import Deployment from "../components/resources/deployment";
+import Deployment from "../components/workload/deployment";
 
 const DeploymentPage = () => {
   return <Deployment />;

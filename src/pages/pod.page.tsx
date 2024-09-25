@@ -1,4 +1,4 @@
-import PodList from "../components/resources/pod-list";
+import PodList from "../components/workload/pod-list";
 
 const PodPage = () => {
   return <PodList />;
