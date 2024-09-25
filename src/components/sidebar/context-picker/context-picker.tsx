@@ -22,15 +22,15 @@ const ContextPicker = () => {
       setShouldRender(false);
     } else if (query.isSuccess) {
       setShouldRender(true);
-      setContext(query.data?.current.name || "");
-      setNamespace(query.data?.current.context.namespace || "");
+      setContext(query.data.current.name || "");
+      setNamespace(query.data.current.context.namespace || "default");
     }
   });
 
   const handleClusterChange = async (event: SelectChangeEvent) => {
     const response = await contextService.switchContext(event.target.value);
     setContext(response.namedContext.name);
-    setNamespace(response.namedContext.context.namespace);
+    setNamespace(response.namedContext.context.namespace ?? "default");
   };
 
   return (

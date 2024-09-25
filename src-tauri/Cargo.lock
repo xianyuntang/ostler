@@ -2216,10 +2216,12 @@ name = "ostler"
 version = "0.1.0"
 dependencies = [
  "dashmap",
+ "home",
  "k8s-openapi",
  "kube",
  "serde",
  "serde_json",
+ "serde_yaml",
  "tauri",
  "tauri-build",
  "thiserror",

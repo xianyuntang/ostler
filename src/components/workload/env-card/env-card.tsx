@@ -14,7 +14,11 @@ const EnvCard: Component<EnvCardProps> = (props) => {
       <Typography variant="subtitle1">Environment Variable</Typography>
       <Card sx={{ p: "1em", borderColor: orange[600] }} variant="outlined">
         <Typography variant="body2">
-          <Show when={props.envs} keyed>
+          <Show
+            when={props.envs}
+            keyed
+            fallback={<Typography>No environment variables found!</Typography>}
+          >
             {(env) => (
               <For each={Object.entries(env)}>
                 {([, entry]) => (

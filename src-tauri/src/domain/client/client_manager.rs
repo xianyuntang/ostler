@@ -1,5 +1,8 @@
+use home::home_dir;
 use kube::config::{KubeConfigOptions, Kubeconfig, NamedContext};
 use kube::{Client, Config};
+use std::fs::File;
+use std::io::BufReader;
 
 pub struct ClientManager {
     kubeconfig: Kubeconfig,
@@ -8,9 +11,26 @@ pub struct ClientManager {
 
 impl ClientManager {
     pub fn new() -> Self {
-        let kubeconfig = Kubeconfig::from_env()
-            .expect("KUBECONFIG env not found.")
-            .expect("KUBECONFIG is empty.");
+        let mut kubeconfig = Kubeconfig::from_env().expect("KUBECONFIG env not found.");
+
+        if let Some(home) = home_dir() {
+            let kubeconfig_path = home.join(".kube").join("config");
+            let file = File::open(kubeconfig_path.clone()).unwrap_or_else(|_| {
+                panic!(
+                    "Failed to open file: {}",
+                    kubeconfig_path
+                        .to_str()
+                        .expect("Failed to convert path to string")
+                )
+            });
+
+            let reader = BufReader::new(file);
+            let yaml: Kubeconfig = serde_yaml::from_reader(reader).expect("Failed to parse YAML");
+
+            kubeconfig = Some(yaml)
+        }
+
+        let kubeconfig = kubeconfig.clone().unwrap();
 
         Self {
             kubeconfig: kubeconfig.clone(),

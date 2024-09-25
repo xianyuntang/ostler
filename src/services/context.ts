@@ -1,7 +1,7 @@
 import { invoker } from "../core";
 
 export interface NamedContext {
-  context: { cluste: string; user: string; namespace: string };
+  context: { cluster?: string; user?: string; namespace?: string };
   name: string;
 }
 
