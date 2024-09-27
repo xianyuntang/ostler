@@ -13,9 +13,12 @@ use crate::domain::resources::pod::{get_pod_logs, list_pods};
 use crate::domain::resources::portforward::{start_portforward, stop_portforward};
 use crate::infrastructure::app::AppData;
 use tauri::async_runtime::Mutex;
+use tracing::Level;
 
 fn main() {
-    tracing_subscriber::fmt::init();
+    tracing_subscriber::fmt()
+        .with_max_level(Level::DEBUG)
+        .init();
     tauri::Builder::default()
         .manage(Mutex::new(AppData {
             client_manager: ClientManager::new(),

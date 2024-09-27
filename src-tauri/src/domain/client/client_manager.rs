@@ -3,6 +3,7 @@ use kube::config::{KubeConfigOptions, Kubeconfig, NamedContext};
 use kube::{Client, Config};
 use std::fs::File;
 use std::io::BufReader;
+use std::path::PathBuf;
 
 pub struct ClientManager {
     kubeconfig: Kubeconfig,
@@ -11,31 +12,32 @@ pub struct ClientManager {
 
 impl ClientManager {
     pub fn new() -> Self {
-        let mut kubeconfig = Kubeconfig::from_env().expect("KUBECONFIG env not found.");
+        let kubeconfig = Kubeconfig::from_env().unwrap_or_else(|_| {
+            tracing::debug!("Failed to load kubeconfig from env. trying to load from file");
+            Self::get_kubeconfig_path().map(|path| Self::load_kubeconfig_from_file(&path))
+        });
 
-        if let Some(home) = home_dir() {
-            let kubeconfig_path = home.join(".kube").join("config");
-            let file = File::open(kubeconfig_path.clone()).unwrap_or_else(|_| {
-                panic!(
-                    "Failed to open file: {}",
-                    kubeconfig_path
-                        .to_str()
-                        .expect("Failed to convert path to string")
-                )
-            });
-
-            let reader = BufReader::new(file);
-            let yaml: Kubeconfig = serde_yaml::from_reader(reader).expect("Failed to parse YAML");
-
-            kubeconfig = Some(yaml)
-        }
-
-        let kubeconfig = kubeconfig.clone().unwrap();
+        let kubeconfig = kubeconfig.expect("Can not init kubeconfig.");
 
         Self {
-            kubeconfig: kubeconfig.clone(),
+            kubeconfig,
             current_kubeconfig_index: 0,
         }
+    }
+
+    fn get_kubeconfig_path() -> Option<PathBuf> {
+        home_dir().map(|home| home.join(".kube").join("config"))
+    }
+
+    fn load_kubeconfig_from_file(path: &PathBuf) -> Kubeconfig {
+        let file = File::open(path).unwrap_or_else(|_| {
+            panic!(
+                "Failed to open file: {}",
+                path.to_str().expect("Failed to convert path to string")
+            )
+        });
+        let reader = BufReader::new(file);
+        serde_yaml::from_reader(reader).expect("Failed to parse YAML")
     }
 }
 
@@ -74,15 +76,19 @@ impl ClientManager {
         let cluster = context_clone.cluster;
         let user = context_clone.user;
 
+        tracing::debug!("context={}, cluster={}, user={}", context, cluster, user);
+
         let kubeconfig_option = KubeConfigOptions {
             context: Some(context),
             cluster: Some(cluster),
             user: Some(user),
         };
 
-        let config = Config::from_kubeconfig(&kubeconfig_option)
+        let mut config = Config::from_kubeconfig(&kubeconfig_option)
             .await
             .expect("KUBECONFIG is not configurable.");
+
+        config.accept_invalid_certs = true;
 
         Client::try_from(config).expect("Initiate kube client failed.")
     }
