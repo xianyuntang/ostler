@@ -18,7 +18,8 @@
     "@suid/icons-material": "^0.8.1",
     "@suid/material": "^0.17.0",
     "@tanstack/solid-query": "^5.56.2",
-    "@tauri-apps/api": "^1",
+    "@tauri-apps/api": "^2.0.2",
+    "@tauri-apps/plugin-shell": "^2.0.0",
     "dayjs": "^1.11.13",
     "immer": "^10.1.1",
     "solid-js": "^1.7.8",
@@ -27,7 +28,7 @@
   "devDependencies": {
     "@eslint/js": "^9.10.0",
     "@suid/vite-plugin": "^0.3.0",
-    "@tauri-apps/cli": "^1",
+    "@tauri-apps/cli": "^2.0.3",
     "eslint": "^9.10.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-simple-import-sort": "^12.1.1",
