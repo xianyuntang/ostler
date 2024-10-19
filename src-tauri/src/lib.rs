@@ -10,16 +10,20 @@ use crate::domain::resources::pod::{get_pod_logs, list_pods};
 use crate::domain::resources::portforward::{start_portforward, stop_portforward};
 use crate::infrastructure::app::AppData;
 use tauri::async_runtime::Mutex;
+use tauri::Manager;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tracing_subscriber::fmt::init();
     tauri::Builder::default()
         .plugin(tauri_plugin_shell::init())
-        .manage(Mutex::new(AppData {
-            client_manager: ClientManager::new(),
-            portforward_manager: PortforwardManager::new(),
-        }))
+        .setup(|app| {
+            app.manage(Mutex::new(AppData {
+                client_manager: ClientManager::new(),
+                portforward_manager: PortforwardManager::new(),
+            }));
+            Ok(())
+        })
         .invoke_handler(tauri::generate_handler![
             list_namespaces,
             list_deployments,
