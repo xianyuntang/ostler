@@ -3,11 +3,12 @@ mod infrastructure;
 
 use crate::domain::client::client_manager::ClientManager;
 use crate::domain::portforward::portforward_manager::PortforwardManager;
-use crate::domain::resources::context::{list_contexts, switch_context};
-use crate::domain::resources::deployment::list_deployments;
-use crate::domain::resources::namespace::list_namespaces;
-use crate::domain::resources::pod::{get_pod_logs, list_pods};
-use crate::domain::resources::portforward::{start_portforward, stop_portforward};
+use crate::domain::resources::contexts::commands::{list_contexts, switch_context};
+use crate::domain::resources::deployments::commands::list_deployments;
+use crate::domain::resources::namespaces::commands::list_namespaces;
+use crate::domain::resources::pods::commands::{get_pod_logs, list_pods};
+use crate::domain::resources::portforward::commands::{start_portforward, stop_portforward};
+
 use crate::infrastructure::app::AppData;
 use tauri::async_runtime::Mutex;
 use tauri::Manager;
@@ -16,7 +17,6 @@ use tauri::Manager;
 pub fn run() {
     tracing_subscriber::fmt::init();
     tauri::Builder::default()
-        .plugin(tauri_plugin_shell::init())
         .setup(|app| {
             app.manage(Mutex::new(AppData {
                 client_manager: ClientManager::new(),
@@ -25,14 +25,14 @@ pub fn run() {
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![
-            list_namespaces,
-            list_deployments,
             list_contexts,
             switch_context,
-            list_pods,
+            list_namespaces,
             get_pod_logs,
+            list_pods,
+            list_deployments,
             start_portforward,
-            stop_portforward,
+            stop_portforward
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

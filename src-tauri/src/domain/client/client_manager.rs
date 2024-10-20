@@ -12,12 +12,12 @@ pub struct ClientManager {
 
 impl ClientManager {
     pub fn new() -> Self {
-        let kubeconfig = Kubeconfig::from_env().unwrap_or_else(|_| {
-            tracing::debug!("Failed to load kubeconfig from env. trying to load from file");
-            Self::get_kubeconfig_path().map(|path| Self::load_kubeconfig_from_file(&path))
-        });
+        let kubeconfig = Kubeconfig::from_env().unwrap();
 
-        let kubeconfig = kubeconfig.expect("Can not init kubeconfig.");
+        let kubeconfig = kubeconfig.unwrap_or_else(|| {
+            let path = Self::get_kubeconfig_path();
+            Self::load_kubeconfig_from_file(&path)
+        });
 
         Self {
             kubeconfig,
@@ -25,8 +25,8 @@ impl ClientManager {
         }
     }
 
-    fn get_kubeconfig_path() -> Option<PathBuf> {
-        home_dir().map(|home| home.join(".kube").join("config"))
+    fn get_kubeconfig_path() -> PathBuf {
+        home_dir().unwrap().join(".kube").join("config")
     }
 
     fn load_kubeconfig_from_file(path: &PathBuf) -> Kubeconfig {
@@ -36,6 +36,7 @@ impl ClientManager {
                 path.to_str().expect("Failed to convert path to string")
             )
         });
+
         let reader = BufReader::new(file);
         serde_yaml::from_reader(reader).expect("Failed to parse YAML")
     }
