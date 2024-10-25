@@ -51,23 +51,24 @@ impl PortforwardManager {
                                     "Cannot take stream",
                                 ),
                             ))?;
-                            let (mut pod_reader, mut pod_writer) = tokio::io::split(stream);
+                            let (mut resource_reader, mut resource_writer) =
+                                tokio::io::split(stream);
                             let (mut socket_reader, mut socket_writer) = tokio::io::split(socket);
 
-                            let client_to_pod = tokio::spawn(async move {
-                                tokio::io::copy(&mut socket_reader, &mut pod_writer).await?;
-                                pod_writer.shutdown().await?;
+                            let client_to_resource = tokio::spawn(async move {
+                                tokio::io::copy(&mut socket_reader, &mut resource_writer).await?;
+                                resource_writer.shutdown().await?;
                                 Ok::<(), ApiError>(())
                             });
 
-                            let pod_to_client = tokio::spawn(async move {
-                                tokio::io::copy(&mut pod_reader, &mut socket_writer).await?;
+                            let resource_to_client = tokio::spawn(async move {
+                                tokio::io::copy(&mut resource_reader, &mut socket_writer).await?;
                                 socket_writer.shutdown().await?;
 
                                 Ok::<(), ApiError>(())
                             });
 
-                            let (res1, res2) = tokio::join!(client_to_pod, pod_to_client);
+                            let (res1, res2) = tokio::join!(client_to_resource, resource_to_client);
                             res1??;
                             res2??;
                             Ok::<(), ApiError>(())
