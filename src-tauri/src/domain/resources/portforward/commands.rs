@@ -5,6 +5,7 @@ use crate::infrastructure::response::Response;
 use k8s_openapi::api::core::v1::Pod;
 use serde_json::json;
 
+use log;
 use tauri::async_runtime::Mutex;
 use tauri::State;
 
@@ -17,7 +18,7 @@ pub async fn start_portforward(
     container_port: u16,
     local_port: u16,
 ) -> Result<Response, ApiError> {
-    tracing::info!("start_portforward called");
+    log::info!("start_portforward called");
 
     let app_data = state.lock().await;
 
@@ -41,7 +42,7 @@ pub async fn stop_portforward(
     state: State<'_, Mutex<AppData>>,
     name: &str,
 ) -> Result<Response, ApiError> {
-    tracing::info!("stop_portforward called");
+    log::info!("stop_portforward called");
 
     let app_data = state.lock().await;
 

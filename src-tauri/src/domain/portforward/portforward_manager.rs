@@ -75,7 +75,7 @@ impl PortforwardManager {
                         });
                     }
                     Err(e) => {
-                        tracing::error!("Error accepting connection: {:?}", e);
+                        log::error!("Error accepting connection: {:?}", e);
                         break;
                     }
                 }

@@ -6,6 +6,7 @@ use kube::api::{ListParams, LogParams};
 use serde_json::json;
 
 use crate::domain::client::api_helper::get_api;
+use log;
 use tauri::async_runtime::Mutex;
 use tauri::State;
 
@@ -14,7 +15,7 @@ pub async fn list_pods(
     state: State<'_, Mutex<AppData>>,
     namespace: &str,
 ) -> Result<Response, ApiError> {
-    tracing::info!("list_pods called");
+    log::info!("list_pods called");
 
     let client = state.lock().await.client_manager.get_client().await;
 
@@ -37,7 +38,7 @@ pub async fn get_pod_logs(
     pod_name: &str,
     container_name: String,
 ) -> Result<Response, ApiError> {
-    tracing::info!("get_pod_log called");
+    log::info!("get_pod_log called");
 
     let client = state.lock().await.client_manager.get_client().await;
 

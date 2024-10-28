@@ -15,8 +15,14 @@ use tauri::Manager;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
-    tracing_subscriber::fmt::init();
     tauri::Builder::default()
+        .plugin(
+            tauri_plugin_log::Builder::new()
+                .level(log::LevelFilter::Warn)
+                .level_for("ostler_lib", log::LevelFilter::Trace)
+                .max_file_size(500_000 /* bytes */)
+                .build(),
+        )
         .setup(|app| {
             app.manage(Mutex::new(AppData {
                 client_manager: ClientManager::new(),

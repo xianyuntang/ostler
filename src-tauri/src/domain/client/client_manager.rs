@@ -1,6 +1,7 @@
 use home::home_dir;
 use kube::config::{KubeConfigOptions, Kubeconfig, NamedContext};
 use kube::{Client, Config};
+use log;
 use std::fs::File;
 use std::io::BufReader;
 use std::path::PathBuf;
@@ -52,7 +53,7 @@ impl ClientManager {
     }
 
     pub async fn switch_context(&mut self, context: &str) -> NamedContext {
-        tracing::info!("KUBECONFIG {} has been loaded", context);
+        log::info!("KUBECONFIG {} has been loaded", context);
         if let Some((index, _)) = self
             .kubeconfig
             .contexts
@@ -77,7 +78,7 @@ impl ClientManager {
         let cluster = context_clone.cluster;
         let user = context_clone.user;
 
-        tracing::debug!("context={}, cluster={}, user={}", context, cluster, user);
+        log::debug!("context={}, cluster={}, user={}", context, cluster, user);
 
         let kubeconfig_option = KubeConfigOptions {
             context: Some(context),
