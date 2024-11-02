@@ -17,7 +17,7 @@ const Layout: ParentComponent = (props) => {
       <Header />
       <Paper
         sx={{
-          height: "calc(100% - 3.75em)",
+          height: "calc(100% - 4rem)",
           display: "flex",
         }}
       >
@@ -27,7 +27,7 @@ const Layout: ParentComponent = (props) => {
             width: "100%",
             height: "100%",
             overflow: "scroll",
-            margin: "8px",
+            padding: "0.5rem",
           }}
         >
           {props.children}

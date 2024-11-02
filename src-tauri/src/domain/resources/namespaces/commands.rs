@@ -11,14 +11,14 @@ use tauri::State;
 
 #[tauri::command]
 pub async fn list_namespaces(state: State<'_, Mutex<AppData>>) -> Result<Response, ApiError> {
-    log::info!("list_namespaces called");
+    log::debug!("list_namespaces called");
 
     let app_data = state.lock().await;
 
     let client = app_data.client_manager.get_client().await?;
-    let clinet_clone = client.clone();
+    let client_clone = client.clone();
 
-    let namespaces = Api::<Namespace>::all(clinet_clone)
+    let namespaces = Api::<Namespace>::all(client_clone)
         .list(&ListParams::default())
         .await?
         .items

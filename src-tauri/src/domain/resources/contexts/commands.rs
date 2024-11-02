@@ -13,7 +13,7 @@ pub async fn add_context(
     state: State<'_, Mutex<AppData>>,
     file_path: String,
 ) -> Result<Response, ApiError> {
-    log::info!("add_context called");
+    log::debug!("add_context called");
 
     let mut app_data = state.lock().await;
 
@@ -41,7 +41,7 @@ pub async fn remove_context(
     state: State<'_, Mutex<AppData>>,
     context: &str,
 ) -> Result<Response, ApiError> {
-    log::info!("list_contexts called");
+    log::debug!("list_contexts called");
 
     let mut app_data = state.lock().await;
 
@@ -60,7 +60,7 @@ pub async fn remove_context(
 
 #[tauri::command]
 pub async fn list_contexts(state: State<'_, Mutex<AppData>>) -> Result<Response, ApiError> {
-    log::info!("list_contexts called");
+    log::debug!("list_contexts called");
 
     let app_data = state.lock().await;
 
@@ -76,7 +76,7 @@ pub async fn switch_context(
     state: State<'_, Mutex<AppData>>,
     context: &str,
 ) -> Result<Response, ApiError> {
-    log::info!("switch_context called");
+    log::debug!("switch_context called");
 
     let mut app_data = state.lock().await;
     let client_manager = &mut app_data.client_manager;

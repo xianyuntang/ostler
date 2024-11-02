@@ -14,7 +14,7 @@ pub async fn list_deployments(
     state: State<'_, Mutex<AppData>>,
     namespace: &str,
 ) -> Result<Response, ApiError> {
-    log::info!("list_deployments called");
+    log::debug!("list_deployments called");
 
     let client = state.lock().await.client_manager.get_client().await?;
 

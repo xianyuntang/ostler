@@ -67,7 +67,7 @@ impl ClientManager {
     }
 
     pub fn switch_context(&mut self, context: &str) -> Result<(), ApiError> {
-        log::info!("KUBECONFIG {} has been loaded", context);
+        log::debug!("KUBECONFIG {} has been loaded", context);
         if let Some(kubeconfig) = self.available_kubeconfigs.get(context) {
             self.current_kubeconfig = Some(kubeconfig.to_owned());
             return Ok(());
@@ -82,6 +82,7 @@ impl ClientManager {
     pub async fn get_client(&self) -> Result<Client, ApiError> {
         if let Some(kubeconfig) = self.current_kubeconfig.clone() {
             if let Some(named_context) = kubeconfig.contexts.first() {
+                log::debug!("Get kube client {}", named_context.name);
                 let context_clone = named_context.context.clone().unwrap();
                 let context = named_context.clone().name;
                 let cluster = context_clone.cluster;
@@ -92,8 +93,8 @@ impl ClientManager {
                     user: Some(user),
                 };
 
-                let mut config = Config::from_kubeconfig(&kubeconfig_option).await?;
-
+                let mut config =
+                    Config::from_custom_kubeconfig(kubeconfig, &kubeconfig_option).await?;
                 config.accept_invalid_certs = true;
                 return Ok(Client::try_from(config)?);
             };

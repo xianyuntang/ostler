@@ -32,6 +32,7 @@ pub fn run() {
             let store = app.store("store.json")?;
             let client_manager = if let Some(kubeconfig_contents) = store.get("kubeconfig_contents")
             {
+                log::info!("Loading kubeconfig file from store");
                 let kubeconfig_contents: Vec<String> = serde_json::from_value(kubeconfig_contents)?;
                 ClientManager::from_vec(&kubeconfig_contents)
             } else {

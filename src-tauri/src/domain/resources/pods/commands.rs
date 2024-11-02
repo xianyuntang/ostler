@@ -38,7 +38,7 @@ pub async fn get_pod_logs(
     pod_name: &str,
     container_name: String,
 ) -> Result<Response, ApiError> {
-    log::info!("get_pod_log called");
+    log::debug!("get_pod_log called");
 
     let client = state.lock().await.client_manager.get_client().await?;
 

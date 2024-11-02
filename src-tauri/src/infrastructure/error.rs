@@ -1,4 +1,5 @@
 use kube;
+use log;
 use serde_json::json;
 
 #[derive(Debug, thiserror::Error)]
@@ -38,6 +39,9 @@ impl serde::Serialize for ApiError {
     {
         let error = serde_json::to_string(&json!({ "error": self.to_string() }))
             .expect("Failed to serialize JSON");
+
+        log::error!("{error}");
+
         serializer.serialize_str(&error)
     }
 }

@@ -42,7 +42,7 @@ pub async fn stop_portforward(
     state: State<'_, Mutex<AppData>>,
     name: &str,
 ) -> Result<Response, ApiError> {
-    log::info!("stop_portforward called");
+    log::debug!("stop_portforward called");
 
     let app_data = state.lock().await;
 
