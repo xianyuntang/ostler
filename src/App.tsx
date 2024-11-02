@@ -5,7 +5,9 @@ import { ParentComponent } from "solid-js";
 
 import Layout from "./components/layout";
 
-const theme = createTheme({});
+const theme = createTheme({
+  palette: { mode: "dark" },
+});
 const queryClient = new QueryClient();
 
 const App: ParentComponent = (props) => {

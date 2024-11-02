@@ -17,7 +17,7 @@ pub async fn list_pods(
 ) -> Result<Response, ApiError> {
     log::info!("list_pods called");
 
-    let client = state.lock().await.client_manager.get_client().await;
+    let client = state.lock().await.client_manager.get_client().await?;
 
     let api = get_api::<Pod>(client, namespace);
 
@@ -40,7 +40,7 @@ pub async fn get_pod_logs(
 ) -> Result<Response, ApiError> {
     log::info!("get_pod_log called");
 
-    let client = state.lock().await.client_manager.get_client().await;
+    let client = state.lock().await.client_manager.get_client().await?;
 
     let api = get_api::<Pod>(client, namespace);
 

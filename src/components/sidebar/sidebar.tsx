@@ -1,15 +1,14 @@
 import { useNavigate } from "@solidjs/router";
 import {
-  Box,
   List,
   ListItem,
   ListItemButton,
   ListItemIcon,
   ListItemText,
+  Stack,
 } from "@suid/material";
 import { For } from "solid-js";
 
-import ContextPicker from "./context-picker";
 import NamespacePicker from "./namespace-picker";
 
 const SIDEBAR_MENUS = [
@@ -30,11 +29,8 @@ const Sidebar = () => {
   };
 
   return (
-    <Box sx={{ width: "20em", maxWidth: "20em" }}>
+    <Stack sx={{ width: "20em", maxWidth: "20em" }}>
       <List>
-        <ListItem>
-          <ContextPicker />
-        </ListItem>
         <ListItem>
           <NamespacePicker />
         </ListItem>
@@ -63,7 +59,7 @@ const Sidebar = () => {
           )}
         </For>
       </List>
-    </Box>
+    </Stack>
   );
 };
 

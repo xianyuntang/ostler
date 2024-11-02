@@ -15,17 +15,17 @@ pub async fn list_namespaces(state: State<'_, Mutex<AppData>>) -> Result<Respons
 
     let app_data = state.lock().await;
 
-    let client = app_data.client_manager.get_client().await;
+    let client = app_data.client_manager.get_client().await?;
+    let clinet_clone = client.clone();
 
-    let namespaces = Api::<Namespace>::all(client)
+    let namespaces = Api::<Namespace>::all(clinet_clone)
         .list(&ListParams::default())
         .await?
         .items
         .into_iter()
         .map(|namespace| namespace.metadata.name.unwrap_or("".into()))
         .collect::<Vec<_>>();
-
     Ok(Response {
-        data: json!(namespaces),
+        data: json!({"namespaces":namespaces, "default":client.default_namespace()}),
     })
 }

@@ -22,7 +22,7 @@ pub async fn start_portforward(
 
     let app_data = state.lock().await;
 
-    let client = app_data.client_manager.get_client().await;
+    let client = app_data.client_manager.get_client().await?;
     let portforward_manager = &app_data.portforward_manager;
 
     if resource == "pod" {

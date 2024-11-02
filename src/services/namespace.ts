@@ -1,5 +1,5 @@
 import { invoker } from "../core";
 
 export const listNamespaces = async () => {
-  return invoker<string[]>("list_namespaces");
+  return invoker<{ namespaces: string[]; default: string }>("list_namespaces");
 };

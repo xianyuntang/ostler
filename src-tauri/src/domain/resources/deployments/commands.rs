@@ -16,7 +16,7 @@ pub async fn list_deployments(
 ) -> Result<Response, ApiError> {
     log::info!("list_deployments called");
 
-    let client = state.lock().await.client_manager.get_client().await;
+    let client = state.lock().await.client_manager.get_client().await?;
 
     let api = get_api::<Deployment>(client, namespace);
 

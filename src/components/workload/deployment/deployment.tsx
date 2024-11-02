@@ -1,13 +1,14 @@
 import {
   Box,
+  CircularProgress,
   Table,
   TableBody,
   TableCell,
   TableContainer,
   TableHead,
   TableRow,
+  Typography,
 } from "@suid/material";
-import { LinearProgress } from "@suid/material";
 import { green, orange, red } from "@suid/material/colors";
 import { createQuery } from "@tanstack/solid-query";
 import dayjs from "dayjs";
@@ -37,18 +38,21 @@ const Deployment = () => {
 
   const deployments = () => {
     return query.data?.filter(
-      (row) => row.metadata.namespace === namespace() || namespace() === ""
+      (row) => row.metadata.namespace === namespace() || namespace() === "",
     );
   };
 
   return (
-    <Box>
-      <Switch>
+    <Switch>
         <Match when={query.isLoading}>
-          <LinearProgress />
+          <Box >
+            <CircularProgress />
+          </Box>
         </Match>
         <Match when={query.isError}>
-          <p>Error: {query.error?.message}</p>
+          <Box>
+            <Typography>Error: {query.error?.message}</Typography>
+          </Box>
         </Match>
         <Match when={query.isSuccess}>
           <TableContainer>
@@ -71,7 +75,7 @@ const Deployment = () => {
                         sx={{
                           color: getReadyColor(
                             row.status.readyReplicas || 0,
-                            row.status.replicas || 0
+                            row.status.replicas || 0,
                           ),
                         }}
                       >
@@ -89,7 +93,6 @@ const Deployment = () => {
           </TableContainer>
         </Match>
       </Switch>
-    </Box>
   );
 };
 
