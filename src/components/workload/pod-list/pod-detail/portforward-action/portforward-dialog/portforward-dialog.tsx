@@ -10,7 +10,7 @@ import {
 import { ChangeEvent } from "@suid/types";
 import { Component, createSignal, onMount } from "solid-js";
 
-import { portforwardService } from "../../../../../../services";
+import { podService } from "../../../../../../services";
 import { Pod } from "../../../../../../services/pod.ts";
 import { useKubeStore, usePortforwardStore } from "../../../../../../stores";
 
@@ -36,27 +36,26 @@ const PortforwardDialog: Component<PortforwardDialogProps> = (props) => {
   });
 
   const handlePortforwardClick = async () => {
-    await portforwardService.start_portforward(
+    const { futureId } = await podService.start_portforward(
       namespace(),
-      "pod",
       props.podName,
       parseInt(containerPort()),
-      parseInt(localPort()),
+      parseInt(localPort())
     );
-    add(context(), namespace(), props.podName, props.containerName);
+    add(context(), namespace(), props.podName, props.containerName, futureId);
     props.onClose();
   };
 
   const handleContainerPortChange = (
     _: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
-    value: string,
+    value: string
   ) => {
     setContainerPort(value);
   };
 
   const handleLocalPortChange = (
     _: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
-    value: string,
+    value: string
   ) => {
     setLocalPort(value);
   };

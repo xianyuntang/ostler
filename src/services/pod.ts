@@ -43,7 +43,7 @@ export const startLogStream = async (
   podName: string,
   containerName: string
 ) => {
-  return invoker<{ event: string }>("start_log_stream", {
+  return invoker<{ event: string; futureId: string }>("start_log_stream", {
     namespace,
     podName,
     containerName,
@@ -56,7 +56,7 @@ export const startExecStream = async (
   containerName: string
 ) => {
   return invoker<{
-    event: string;
+    futureId: string;
     stdinEvent: string;
     stdoutEvent: string;
     prompt: string;
@@ -64,5 +64,19 @@ export const startExecStream = async (
     namespace,
     podName,
     containerName,
+  });
+};
+
+export const start_portforward = async (
+  namespace: string,
+  name: string,
+  containerPort: number,
+  localPort: number
+) => {
+  return invoker<{ futureId: string }>("start_portforward", {
+    namespace,
+    name,
+    containerPort,
+    localPort,
   });
 };

@@ -33,18 +33,19 @@ const TerminalDialog = (props: TerminalDialogProps) => {
     const term = terminal();
     const ref = containerRef();
 
-    let event: string;
+    let futureId: string;
     let stdinEvent: string;
     let stdoutEvent: string;
     let unlisten: UnlistenFn;
 
     (async () => {
       if (ref && term) {
-        ({ event, stdoutEvent, stdinEvent } = await podService.startExecStream(
-          namespace(),
-          props.podName,
-          props.containerName
-        ));
+        ({ futureId, stdoutEvent, stdinEvent } =
+          await podService.startExecStream(
+            namespace(),
+            props.podName,
+            props.containerName
+          ));
 
         unlisten = await listen<{ message: string }>(stdoutEvent, (evt) => {
           term.write(evt.payload.message);
@@ -58,7 +59,7 @@ const TerminalDialog = (props: TerminalDialogProps) => {
     onCleanup(async () => {
       if (event && unlisten) {
         unlisten();
-        await futureService.stopFuture(event);
+        await futureService.stopFuture(futureId);
       }
     });
   });

@@ -32,12 +32,14 @@ const LogDialog: Component<LogDialogProps> = (props) => {
 
   onMount(() => {
     const term = terminal();
+
     let event: string;
+    let futureId: string;
     let unlisten: UnlistenFn;
 
     (async () => {
       if (term) {
-        ({ event } = await podService.startLogStream(
+        ({ event, futureId } = await podService.startLogStream(
           namespace(),
           props.podName,
           props.containerName
@@ -50,9 +52,9 @@ const LogDialog: Component<LogDialogProps> = (props) => {
     })();
 
     onCleanup(() => {
-      if (event && unlisten) {
+      if (futureId && unlisten) {
         unlisten();
-        void futureService.stopFuture(event);
+        void futureService.stopFuture(futureId);
       }
     });
   });

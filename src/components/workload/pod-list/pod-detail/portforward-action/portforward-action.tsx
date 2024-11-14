@@ -4,7 +4,7 @@ import { Box, IconButton } from "@suid/material";
 import { green, grey } from "@suid/material/colors";
 import { Component, createSignal, Show } from "solid-js";
 
-import { portforwardService } from "../../../../../services";
+import { futureService } from "../../../../../services";
 import { Pod } from "../../../../../services/pod.ts";
 import { useKubeStore, usePortforwardStore } from "../../../../../stores";
 import PortforwardDialog from "./portforward-dialog";
@@ -27,18 +27,15 @@ const PortforwardAction: Component<PortforwardActionProps> = (props) => {
     handleClose();
   });
 
-  const isPortforwardRunning = () =>
+  const getFutureId = () =>
     portforward()[
       `${context()}-${namespace()}-${props.podName}-${props.containerName}`
     ];
 
   const handleOpen = async () => {
-    if (isPortforwardRunning()) {
-      await portforwardService.stop_portforward(
-        namespace(),
-        "pod",
-        props.podName,
-      );
+    const futureId = getFutureId();
+    if (getFutureId()) {
+      await futureService.stopFuture(futureId);
       remove(context(), namespace(), props.podName, props.containerName);
     } else {
       setOpen(true);
@@ -52,7 +49,7 @@ const PortforwardAction: Component<PortforwardActionProps> = (props) => {
   const getButtonColor = () => {
     if (props.ports?.length === 0) {
       return grey[500];
-    } else if (isPortforwardRunning()) {
+    } else if (getFutureId()) {
       return green[500];
     }
   };
