@@ -9,7 +9,7 @@ use crate::infrastructure::response::Response;
 use chrono::{Duration as ChronoDuration, Utc};
 use futures::{AsyncBufReadExt, StreamExt, TryStreamExt};
 use k8s_openapi::api::core::v1::Pod;
-use kube::api::{AttachParams, ListParams, LogParams};
+use kube::api::{AttachParams, DeleteParams, ListParams, LogParams};
 
 use log;
 use nanoid::nanoid;
@@ -39,6 +39,25 @@ pub async fn list_pods(
         .collect::<Vec<_>>();
 
     Ok(Response { data: json!(pods) })
+}
+
+#[tauri::command]
+pub async fn delete_pod(
+    state: State<'_, Mutex<AppData>>,
+    namespace: &str,
+    name: &str,
+) -> Result<Response, ApiError> {
+    log::info!("delete_pod called");
+
+    let client = state.lock().await.client_manager.get_client().await?;
+
+    let api = get_api::<Pod>(client, namespace);
+
+    api.delete(name, &DeleteParams::default()).await?;
+
+    Ok(Response {
+        data: json!({"message":"ok"}),
+    })
 }
 
 #[tauri::command]

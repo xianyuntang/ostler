@@ -1,4 +1,5 @@
 import { invoker } from "../core";
+import { OkMessage } from "./constant";
 
 export interface Pod {
   apiVersion: string;
@@ -38,6 +39,10 @@ export const listPods = async (namespace: string) => {
   return invoker<Pod[]>("list_pods", { namespace });
 };
 
+export const deletePod = async (namespace: string, name: string) => {
+  return invoker<OkMessage>("delete_pod", { namespace, name });
+};
+
 export const startLogStream = async (
   namespace: string,
   podName: string,
@@ -67,7 +72,7 @@ export const startExecStream = async (
   });
 };
 
-export const start_portforward = async (
+export const startPortforward = async (
   namespace: string,
   name: string,
   containerPort: number,

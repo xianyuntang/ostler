@@ -9,7 +9,7 @@ use crate::domain::resources::contexts::commands::{
 use crate::domain::resources::deployments::commands::list_deployments;
 use crate::domain::resources::namespaces::commands::list_namespaces;
 use crate::domain::resources::pods::commands::{
-    list_pods, start_exec_stream, start_log_stream, start_portforward,
+    delete_pod, list_pods, start_exec_stream, start_log_stream, start_portforward,
 };
 use crate::infrastructure::app::AppData;
 use domain::future::future_manager::FutureManager;
@@ -59,6 +59,7 @@ pub fn run() {
             // pod
             start_log_stream,
             list_pods,
+            delete_pod,
             start_exec_stream,
             // deployment
             list_deployments,

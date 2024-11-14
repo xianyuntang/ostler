@@ -1,5 +1,7 @@
+import DeleteOutlineTwoToneIcon from "@suid/icons-material/DeleteOutlineTwoTone";
 import {
   Box,
+  IconButton,
   LinearProgress,
   Table,
   TableBody,
@@ -18,7 +20,6 @@ import { podService } from "../../../services";
 import { useKubeStore } from "../../../stores";
 import ContainerStatus from "./container-status";
 import PodDetail from "./pod-detail";
-
 dayjs.extend(relativeTime);
 
 const PodList = () => {
@@ -32,6 +33,7 @@ const PodList = () => {
   const query = createQuery(() => ({
     queryKey: ["listPods", context(), namespace()],
     queryFn: () => podService.listPods(namespace()),
+    refetchInterval: 3000,
   }));
 
   const pods = () => {
@@ -47,6 +49,12 @@ const PodList = () => {
 
   const handlePodDetailClose = () => {
     setPodDetailOpen(false);
+  };
+
+  const handleDeletePodClick = async (evt: Event, name: string) => {
+    evt.stopPropagation();
+    await podService.deletePod(namespace(), name);
+    await query.refetch();
   };
 
   return (
@@ -66,6 +74,7 @@ const PodList = () => {
                   <TableCell sx={{ width: "20em" }}>Name</TableCell>
                   <TableCell sx={{ width: "10em" }}>Status</TableCell>
                   <TableCell>Age</TableCell>
+                  <TableCell>Action</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -84,6 +93,15 @@ const PodList = () => {
                       </TableCell>
                       <TableCell>
                         {dayjs(pod.metadata.creationTimestamp).fromNow()}
+                      </TableCell>
+                      <TableCell>
+                        <IconButton
+                          onclick={(evt) =>
+                            handleDeletePodClick(evt, pod.metadata.name)
+                          }
+                        >
+                          <DeleteOutlineTwoToneIcon />
+                        </IconButton>
                       </TableCell>
                     </TableRow>
                   )}
