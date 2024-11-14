@@ -1,9 +1,14 @@
+use std::string::FromUtf8Error;
+
 use kube;
 use log;
 use serde_json::json;
 
 #[derive(Debug, thiserror::Error)]
 pub enum ApiError {
+    #[error(transparent)]
+    Tauri(#[from] tauri::Error),
+
     #[error(transparent)]
     Boxed(#[from] Box<dyn std::error::Error + Send + Sync>),
 
@@ -27,6 +32,12 @@ pub enum ApiError {
 
     #[error(transparent)]
     SerdeYaml(#[from] serde_yaml::Error),
+
+    #[error(transparent)]
+    FromUtf8Error(#[from] FromUtf8Error),
+
+    #[error(transparent)]
+    SendError(#[from] futures::channel::mpsc::SendError),
 
     #[error("The specified {item} was not found.")]
     NotFound { item: String },

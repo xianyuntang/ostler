@@ -1,7 +1,7 @@
-import Deployment from "../components/workload/deployment";
+import DeploymentList from "../components/workload/deployment-list";
 
 const DeploymentPage = () => {
-  return <Deployment />;
+  return <DeploymentList />;
 };
 
 export default DeploymentPage;

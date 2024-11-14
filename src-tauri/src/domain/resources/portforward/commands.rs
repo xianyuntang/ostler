@@ -28,7 +28,7 @@ pub async fn start_portforward(
     if resource == "pod" {
         let api = get_api::<Pod>(client.clone(), namespace);
         portforward_manager
-            .start_portforward(api, name.to_string(), container_port, local_port)
+            .start_portforward(api, namespace, resource, name, container_port, local_port)
             .await?;
     }
 
@@ -40,6 +40,8 @@ pub async fn start_portforward(
 #[tauri::command]
 pub async fn stop_portforward(
     state: State<'_, Mutex<AppData>>,
+    namespace: &str,
+    resource: &str,
     name: &str,
 ) -> Result<Response, ApiError> {
     log::debug!("stop_portforward called");
@@ -47,7 +49,7 @@ pub async fn stop_portforward(
     let app_data = state.lock().await;
 
     let portforward_manager = &app_data.portforward_manager;
-    portforward_manager.stop_portforward(name);
+    portforward_manager.stop_portforward(namespace, resource, name);
 
     Ok(Response {
         data: json!({"message":"ok"}),

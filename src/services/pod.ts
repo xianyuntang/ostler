@@ -38,12 +38,29 @@ export const listPods = async (namespace: string) => {
   return invoker<Pod[]>("list_pods", { namespace });
 };
 
-export const getPodLogs = async (
+export const startLogStream = async (
   namespace: string,
   podName: string,
-  containerName: string,
+  containerName: string
 ) => {
-  return invoker<string[]>("get_pod_logs", {
+  return invoker<{ event: string }>("start_log_stream", {
+    namespace,
+    podName,
+    containerName,
+  });
+};
+
+export const startExecStream = async (
+  namespace: string,
+  podName: string,
+  containerName: string
+) => {
+  return invoker<{
+    event: string;
+    stdinEvent: string;
+    stdoutEvent: string;
+    prompt: string;
+  }>("start_exec_stream", {
     namespace,
     podName,
     containerName,

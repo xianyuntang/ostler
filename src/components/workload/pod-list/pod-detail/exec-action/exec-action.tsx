@@ -1,16 +1,16 @@
 import { createShortcut } from "@solid-primitives/keyboard";
-import ArticleTwoToneIcon from "@suid/icons-material/ArticleTwoTone";
+import TerminalTwoToneIcon from "@suid/icons-material/TerminalTwoTone";
 import { Box, IconButton } from "@suid/material";
-import { Component, createSignal, Show } from "solid-js";
+import { createSignal, Show } from "solid-js";
 
-import LogDialog from "./log-dialog";
+import TerminalDialog from "./terminal-dialog/terminal-dialog.tsx";
 
-interface LogActionProps {
+interface ExecActionProps {
   podName: string;
   containerName: string;
 }
 
-const LogAction: Component<LogActionProps> = (props) => {
+const ExecAction = (props: ExecActionProps) => {
   const [open, setOpen] = createSignal<boolean>(false);
 
   createShortcut(["ESCAPE"], () => {
@@ -28,10 +28,10 @@ const LogAction: Component<LogActionProps> = (props) => {
   return (
     <Box>
       <IconButton onclick={handleOpen}>
-        <ArticleTwoToneIcon color="primary" />
+        <TerminalTwoToneIcon color="primary" />
       </IconButton>
       <Show when={open()}>
-        <LogDialog
+        <TerminalDialog
           onClose={handleClose}
           podName={props.podName}
           containerName={props.containerName}
@@ -41,4 +41,4 @@ const LogAction: Component<LogActionProps> = (props) => {
   );
 };
 
-export default LogAction;
+export default ExecAction;

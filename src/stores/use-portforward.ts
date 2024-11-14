@@ -6,8 +6,18 @@ interface PortforwardState {
 }
 
 interface PortforwardActions {
-  add: (name: string) => void;
-  remove: (name: string) => void;
+  add: (
+    context: string,
+    namespace: string,
+    pod: string,
+    container: string,
+  ) => void;
+  remove: (
+    context: string,
+    namespace: string,
+    pod: string,
+    container: string,
+  ) => void;
 }
 
 export const usePortforwardStore = createWithSignal<
@@ -15,13 +25,14 @@ export const usePortforwardStore = createWithSignal<
 >()(
   immer((set) => ({
     portforward: {},
-    add: (name) =>
+    add: (context, namespace, pod, container) =>
       set((state) => {
-        state.portforward[name] = true;
+        state.portforward[`${context}-${namespace}-${pod}-${container}`] = true;
       }),
-    remove: (name) =>
+    remove: (context, namespace, pod, container) =>
       set((state) => {
-        state.portforward[name] = false;
+        state.portforward[`${context}-${namespace}-${pod}-${container}`] =
+          false;
       }),
   })),
 );

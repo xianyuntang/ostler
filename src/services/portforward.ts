@@ -6,7 +6,7 @@ export const start_portforward = async (
   resource: "pod" | "service",
   name: string,
   containerPort: number,
-  localPort: number
+  localPort: number,
 ) => {
   return invoker<OkMessage>("start_portforward", {
     namespace,
@@ -17,6 +17,10 @@ export const start_portforward = async (
   });
 };
 
-export const stop_portforward = async (name: string) => {
-  return invoker<OkMessage>("stop_portforward", { name });
+export const stop_portforward = async (
+  namespace: string,
+  resource: "pod" | "service",
+  name: string,
+) => {
+  return invoker<OkMessage>("stop_portforward", { namespace, resource, name });
 };

@@ -11,7 +11,7 @@ import {
 import { SelectChangeEvent } from "@suid/material/Select";
 import { createQuery } from "@tanstack/solid-query";
 import { open } from "@tauri-apps/plugin-dialog";
-import { For } from "solid-js";
+import { createEffect, For } from "solid-js";
 
 import { contextService } from "../../../services";
 import { useKubeStore } from "../../../stores";
@@ -23,7 +23,20 @@ const ContextPicker = () => {
   const query = createQuery(() => ({
     queryKey: ["contexts"],
     queryFn: contextService.listContexts,
+    refetchInterval: 0,
   }));
+
+  createEffect(() => {
+    (async () => {
+      if (query.isSuccess) {
+        if (query.data.contexts.length) {
+          const context = query.data.contexts[0];
+          await contextService.switchContext(context);
+          setContext(context);
+        }
+      }
+    })();
+  });
 
   const handleContextChange = async (event: SelectChangeEvent) => {
     await contextService.switchContext(event.target.value);
@@ -47,7 +60,7 @@ const ContextPicker = () => {
   };
 
   return (
-    <Stack direction="row">
+    <Stack direction="row" spacing={1}>
       <Box width="240px">
         <FormControl variant="standard" fullWidth>
           <Select
@@ -63,10 +76,10 @@ const ContextPicker = () => {
       </Box>
 
       <IconButton onclick={handleAddNewContext}>
-        <FileUploadTwoToneIcon />
+        <FileUploadTwoToneIcon color="primary" />
       </IconButton>
       <IconButton onclick={handleRemoveContext}>
-        <DeleteForeverTwoToneIcon />
+        <DeleteForeverTwoToneIcon color="primary" />
       </IconButton>
     </Stack>
   );

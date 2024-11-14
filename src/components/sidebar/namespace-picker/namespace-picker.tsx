@@ -1,12 +1,13 @@
 import { Box, FormControl, InputLabel, MenuItem, Select } from "@suid/material";
 import { SelectChangeEvent } from "@suid/material/Select";
 import { createQuery } from "@tanstack/solid-query";
-import { createEffect, For } from "solid-js";
+import { createEffect, createSignal, For } from "solid-js";
 
 import { namespaceService } from "../../../services";
 import { useKubeStore } from "../../../stores";
 
 const NamespacePicker = () => {
+  const [isInit, setIsInit] = createSignal<boolean>(false);
   const context = useKubeStore((state) => state.context);
   const namespace = useKubeStore((state) => state.namespace);
   const setNamespace = useKubeStore((state) => state.setNamespace);
@@ -17,17 +18,20 @@ const NamespacePicker = () => {
   }));
 
   createEffect(() => {
-    if (query.isSuccess) {
+    context();
+    setIsInit(false);
+  });
+
+  createEffect(() => {
+    if (query.isSuccess && !isInit()) {
+      setIsInit(true);
       setNamespace(query.data.default);
     }
-    console.log(query.data);
   });
 
   const handleNamespaceChange = async (event: SelectChangeEvent) => {
     setNamespace(event.target.value);
   };
-
-  console.log(query.data);
 
   return (
     <Box width="100%">

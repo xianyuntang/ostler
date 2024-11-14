@@ -26,4 +26,16 @@ export default [
       eqeqeq: "error",
     },
   },
+  {
+    files: ["*.ts", "*.tsx"],
+    rules: {
+      "@typescript-eslint/no-unused-vars": [
+        "warn",
+        {
+          varsIgnorePattern: "^_",
+          argsIgnorePattern: "^_",
+        },
+      ],
+    },
+  },
 ];

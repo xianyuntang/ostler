@@ -10,6 +10,7 @@ import { Component, For } from "solid-js";
 
 import { podService } from "../../../../services";
 import EnvCard from "../../env-card";
+import ExecAction from "./exec-action";
 import LogAction from "./log-action";
 import PortforwardAction from "./portforward-action";
 
@@ -63,6 +64,10 @@ const PodDetail: Component<PodDetailProps> = (props) => {
                       ports={container.ports}
                     />
                     <LogAction
+                      podName={props.pod.metadata.name}
+                      containerName={container.name}
+                    />
+                    <ExecAction
                       podName={props.pod.metadata.name}
                       containerName={container.name}
                     />

@@ -22,7 +22,9 @@ impl PortforwardManager {
     pub async fn start_portforward<T: Clone + DeserializeOwned + Portforward + 'static>(
         &self,
         api: Api<T>,
-        name: String,
+        namespace: &str,
+        resource: &str,
+        name: &str,
         container_port: u16,
         local_port: u16,
     ) -> Result<(), ApiError> {
@@ -33,7 +35,7 @@ impl PortforwardManager {
         let listener = socket.listen(1024)?;
 
         let api_arc = Arc::new(api);
-        let name_arc = Arc::new(name.clone());
+        let name_arc = Arc::new(name.to_string());
 
         let handle = tokio::spawn(async move {
             loop {
@@ -83,14 +85,20 @@ impl PortforwardManager {
             Ok::<(), ApiError>(())
         });
 
-        self.handles.insert(name.clone(), handle);
+        self.handles
+            .insert(self.gen_key(namespace, resource, name), handle);
 
         Ok(())
     }
 
-    pub fn stop_portforward(&self, name: &str) {
-        if let Some(handle) = self.handles.remove(name) {
+    pub fn stop_portforward(&self, namespace: &str, resource: &str, name: &str) {
+        let key = self.gen_key(namespace, resource, name);
+        if let Some(handle) = self.handles.remove(&key) {
             handle.1.abort();
         }
+    }
+
+    pub fn gen_key(&self, namespace: &str, resource: &str, name: &str) -> String {
+        format!("{namespace}-{resource}-{name}")
     }
 }

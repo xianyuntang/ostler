@@ -2,16 +2,17 @@ mod domain;
 mod infrastructure;
 
 use crate::domain::client::client_manager::ClientManager;
+use crate::domain::future::commands::stop_future;
 use crate::domain::portforward::portforward_manager::PortforwardManager;
 use crate::domain::resources::contexts::commands::{
     add_context, list_contexts, remove_context, switch_context,
 };
 use crate::domain::resources::deployments::commands::list_deployments;
 use crate::domain::resources::namespaces::commands::list_namespaces;
-use crate::domain::resources::pods::commands::{get_pod_logs, list_pods};
+use crate::domain::resources::pods::commands::{list_pods, start_exec_stream, start_log_stream};
 use crate::domain::resources::portforward::commands::{start_portforward, stop_portforward};
-
 use crate::infrastructure::app::AppData;
+use domain::future::future_manager::FutureManager;
 use tauri::async_runtime::Mutex;
 use tauri::Manager;
 use tauri_plugin_store::StoreExt;
@@ -43,19 +44,27 @@ pub fn run() {
                 store,
                 client_manager,
                 portforward_manager: PortforwardManager::new(),
+                future_manager: FutureManager::new(),
             }));
 
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![
+            // context
             list_contexts,
             switch_context,
             add_context,
             remove_context,
+            // namespace
             list_namespaces,
-            get_pod_logs,
+            // pod
+            start_log_stream,
             list_pods,
+            start_exec_stream,
+            // deployment
             list_deployments,
+            // other
+            stop_future,
             start_portforward,
             stop_portforward
         ])
