@@ -11,6 +11,7 @@ import {
 } from "@suid/material";
 import { createQuery } from "@tanstack/solid-query";
 import dayjs from "dayjs";
+import relativeTime from "dayjs/plugin/relativeTime";
 import { createSignal, For, Match, Show, Switch } from "solid-js";
 
 import { podService } from "../../../services";
@@ -18,10 +19,12 @@ import { useKubeStore } from "../../../stores";
 import ContainerStatus from "./container-status";
 import PodDetail from "./pod-detail";
 
+dayjs.extend(relativeTime);
+
 const PodList = () => {
   const [podDetailOpen, setPodDetailOpen] = createSignal<boolean>(false);
   const [selectedPod, setSelectedPod] = createSignal<podService.Pod | null>(
-    null,
+    null
   );
   const context = useKubeStore((state) => state.context);
   const namespace = useKubeStore((state) => state.namespace);
@@ -33,7 +36,7 @@ const PodList = () => {
 
   const pods = () => {
     return query.data?.filter(
-      (pod) => pod.metadata.namespace === namespace() || namespace() === "",
+      (pod) => pod.metadata.namespace === namespace() || namespace() === ""
     );
   };
 
@@ -62,7 +65,7 @@ const PodList = () => {
                 <TableRow>
                   <TableCell sx={{ width: "20em" }}>Name</TableCell>
                   <TableCell sx={{ width: "10em" }}>Status</TableCell>
-                  <TableCell>Created time</TableCell>
+                  <TableCell>Age</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -80,7 +83,7 @@ const PodList = () => {
                         </For>
                       </TableCell>
                       <TableCell>
-                        {dayjs(pod.metadata.creationTimestamp).toString()}
+                        {dayjs(pod.metadata.creationTimestamp).fromNow()}
                       </TableCell>
                     </TableRow>
                   )}

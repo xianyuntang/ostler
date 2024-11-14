@@ -12,10 +12,13 @@ import {
 import { green, orange, red } from "@suid/material/colors";
 import { createQuery } from "@tanstack/solid-query";
 import dayjs from "dayjs";
+import relativeTime from "dayjs/plugin/relativeTime";
 import { For, Match, Switch } from "solid-js";
 
 import { deploymentService } from "../../../services";
 import { useKubeStore } from "../../../stores";
+
+dayjs.extend(relativeTime);
 
 const DeploymentList = () => {
   const context = useKubeStore((state) => state.context);
@@ -38,7 +41,7 @@ const DeploymentList = () => {
 
   const deployments = () => {
     return query.data?.filter(
-      (row) => row.metadata.namespace === namespace() || namespace() === "",
+      (row) => row.metadata.namespace === namespace() || namespace() === ""
     );
   };
 
@@ -61,7 +64,7 @@ const DeploymentList = () => {
               <TableRow>
                 <TableCell sx={{ width: "20em" }}>Name</TableCell>
                 <TableCell sx={{ width: "10em" }}>Status</TableCell>
-                <TableCell>Created time</TableCell>
+                <TableCell>Age</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -75,14 +78,14 @@ const DeploymentList = () => {
                       sx={{
                         color: getReadyColor(
                           row.status.readyReplicas || 0,
-                          row.status.replicas || 0,
+                          row.status.replicas || 0
                         ),
                       }}
                     >
                       {row.status.readyReplicas || 0}/{row.status.replicas || 0}
                     </TableCell>
                     <TableCell>
-                      {dayjs(row.metadata.creationTimestamp).toString()}
+                      {dayjs(row.metadata.creationTimestamp).fromNow()}
                     </TableCell>
                   </TableRow>
                 )}
