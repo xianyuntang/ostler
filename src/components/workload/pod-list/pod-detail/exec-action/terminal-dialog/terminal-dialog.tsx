@@ -54,10 +54,12 @@ const TerminalDialog = (props: TerminalDialogProps) => {
         term.onData((data) => {
           emit(stdinEvent, { key: data });
         });
+
+        term.focus();
       }
     })();
     onCleanup(async () => {
-      if (event && unlisten) {
+      if (futureId && unlisten) {
         unlisten();
         await futureService.stopFuture(futureId);
       }

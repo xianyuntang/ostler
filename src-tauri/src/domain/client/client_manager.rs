@@ -1,20 +1,20 @@
+use indexmap::IndexMap;
 use kube::config::{KubeConfigOptions, Kubeconfig};
 use kube::{Client, Config};
 use log;
-use std::collections::HashMap;
 
 use crate::infrastructure::error::ApiError;
 
 pub struct ClientManager {
     current_kubeconfig: Option<Kubeconfig>,
-    available_kubeconfigs: HashMap<String, Kubeconfig>,
+    available_kubeconfigs: IndexMap<String, Kubeconfig>,
 }
 
 impl ClientManager {
     pub fn new() -> Self {
         Self {
             current_kubeconfig: None,
-            available_kubeconfigs: HashMap::new(),
+            available_kubeconfigs: IndexMap::new(),
         }
     }
     pub fn from_vec(kubeconfig_contents: &Vec<String>) -> Self {
@@ -46,16 +46,18 @@ impl ClientManager {
     }
 
     pub fn remove(&mut self, context: &str) -> Result<(), ApiError> {
-        self.available_kubeconfigs.remove(context);
+        self.available_kubeconfigs.shift_remove(context);
         Ok(())
     }
 
     pub fn to_vec(&self) -> Result<Vec<String>, ApiError> {
-        let kubeconfig_contents = self
+        let mut kubeconfig_contents = self
             .available_kubeconfigs
             .values()
             .map(serde_yaml::to_string)
             .collect::<Result<Vec<String>, _>>()?;
+
+        kubeconfig_contents.sort();
 
         Ok(kubeconfig_contents)
     }
