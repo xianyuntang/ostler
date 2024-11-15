@@ -36,7 +36,7 @@ const PortforwardDialog: Component<PortforwardDialogProps> = (props) => {
   });
 
   const handlePortforwardClick = async () => {
-    const { futureId } = await podService.start_portforward(
+    const { futureId } = await podService.startPortforward(
       namespace(),
       props.podName,
       parseInt(containerPort()),
