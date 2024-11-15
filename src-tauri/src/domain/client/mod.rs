@@ -1,2 +1,2 @@
-pub mod api_helper;
-pub mod client_manager;
+pub(crate) mod api_helper;
+pub(crate) mod client_manager;

@@ -11,14 +11,12 @@ use futures::{AsyncBufReadExt, StreamExt, TryStreamExt};
 use k8s_openapi::api::core::v1::Pod;
 use kube::api::{AttachParams, DeleteParams, ListParams, LogParams};
 
-use log;
 use nanoid::nanoid;
 use serde_json::json;
 
 use tauri::{Emitter, Listener, State, Window};
 use tokio::net::TcpSocket;
 use tokio::{io::AsyncWriteExt, sync::Mutex};
-use tokio_util;
 
 #[tauri::command]
 pub async fn list_pods(

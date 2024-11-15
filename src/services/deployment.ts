@@ -16,3 +16,7 @@ export interface Deployment {
 export const listDeployments = async (namespace: string) => {
   return invoker<Deployment[]>("list_deployments", { namespace });
 };
+
+export const describeDeployment = async (namespace: string, name: string) => {
+  return invoker<Deployment>("describe_deployment", { namespace, name });
+};

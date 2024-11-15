@@ -1,7 +1,6 @@
 use indexmap::IndexMap;
 use kube::config::{KubeConfigOptions, Kubeconfig};
 use kube::{Client, Config};
-use log;
 
 use crate::infrastructure::error::ApiError;
 

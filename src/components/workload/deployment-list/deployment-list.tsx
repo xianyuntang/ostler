@@ -17,7 +17,7 @@ import { For, Match, Switch } from "solid-js";
 
 import { deploymentService } from "../../../services";
 import { useKubeStore } from "../../../stores";
-
+import DescribeAction from "./describe-action";
 dayjs.extend(relativeTime);
 
 const DeploymentList = () => {
@@ -65,28 +65,34 @@ const DeploymentList = () => {
                 <TableCell sx={{ width: "20em" }}>Name</TableCell>
                 <TableCell sx={{ width: "10em" }}>Status</TableCell>
                 <TableCell>Age</TableCell>
+                <TableCell>Action</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
               <For each={deployments()}>
-                {(row) => (
+                {(deployment) => (
                   <TableRow
                     sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
                   >
-                    <TableCell>{row.metadata.name}</TableCell>
+                    <TableCell>{deployment.metadata.name}</TableCell>
                     <TableCell
                       sx={{
                         color: getReadyColor(
-                          row.status.readyReplicas || 0,
-                          row.status.replicas || 0
+                          deployment.status.readyReplicas || 0,
+                          deployment.status.replicas || 0
                         ),
                       }}
                     >
-                      {row.status.readyReplicas || 0}/{row.status.replicas || 0}
+                      {deployment.status.readyReplicas || 0}/
+                      {deployment.status.replicas || 0}
                     </TableCell>
                     <TableCell>
-                      {dayjs(row.metadata.creationTimestamp).fromNow()}
+                      {dayjs(deployment.metadata.creationTimestamp).fromNow()}
                     </TableCell>
+                    <TableCell>
+                      <DescribeAction name={deployment.metadata.name} />
+                    </TableCell>
+                    <TableCell />
                   </TableRow>
                 )}
               </For>

@@ -1,19 +1,11 @@
-import CloseTwoToneIcon from "@suid/icons-material/CloseTwoTone";
-import {
-  AppBar,
-  Box,
-  Dialog,
-  DialogContent,
-  IconButton,
-  Toolbar,
-  Typography,
-} from "@suid/material";
+import { Box, Dialog, DialogContent } from "@suid/material";
 import { emit, listen, UnlistenFn } from "@tauri-apps/api/event";
 import { createSignal, onCleanup, onMount } from "solid-js";
 
 import { futureService, podService } from "../../../../../../services";
 import { useKubeStore } from "../../../../../../stores";
-import { useTerminal } from "../../../terminal";
+import { useTerminal } from "../../../../../shared/terminal";
+import DialogBar from "../../../../../shared/terminal/dialog-bar";
 
 interface TerminalDialogProps {
   onClose: () => void;
@@ -68,22 +60,7 @@ const TerminalDialog = (props: TerminalDialogProps) => {
 
   return (
     <Dialog fullScreen open onClose={props.onClose}>
-      <AppBar position="static">
-        <Toolbar>
-          <IconButton onClick={props.onClose}>
-            <CloseTwoToneIcon sx={{ color: "white" }} color="primary" />
-          </IconButton>
-          <Typography
-            sx={{
-              ml: 2,
-              flex: 1,
-            }}
-            variant="h6"
-          >
-            Terminal
-          </Typography>
-        </Toolbar>
-      </AppBar>
+      <DialogBar title="Terminal" onClose={props.onClose} />
 
       <DialogContent>
         <Box ref={setContainerRef} height="calc(100% - 40px)" width="100%" />

@@ -6,7 +6,7 @@ use crate::domain::future::commands::stop_future;
 use crate::domain::resources::contexts::commands::{
     add_context, list_contexts, remove_context, switch_context,
 };
-use crate::domain::resources::deployments::commands::list_deployments;
+use crate::domain::resources::deployments::commands::{describe_deployment, list_deployments};
 use crate::domain::resources::namespaces::commands::list_namespaces;
 use crate::domain::resources::pods::commands::{
     delete_pod, list_pods, start_exec_stream, start_log_stream, start_portforward,
@@ -63,6 +63,7 @@ pub fn run() {
             start_exec_stream,
             // deployment
             list_deployments,
+            describe_deployment,
             // other
             stop_future,
             start_portforward,

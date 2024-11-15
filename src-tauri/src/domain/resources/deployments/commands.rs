@@ -4,7 +4,6 @@ use crate::infrastructure::error::ApiError;
 use crate::infrastructure::response::Response;
 use k8s_openapi::api::apps::v1::Deployment;
 use kube::api::ListParams;
-use log;
 use serde_json::json;
 use tauri::async_runtime::Mutex;
 use tauri::State;
@@ -29,5 +28,24 @@ pub async fn list_deployments(
 
     Ok(Response {
         data: json!(deployments),
+    })
+}
+
+#[tauri::command]
+pub async fn describe_deployment(
+    state: State<'_, Mutex<AppData>>,
+    namespace: &str,
+    name: &str,
+) -> Result<Response, ApiError> {
+    log::debug!("describe_deployment called");
+
+    let client = state.lock().await.client_manager.get_client().await?;
+
+    let api = get_api::<Deployment>(client, namespace);
+
+    let deployment = api.get(name).await?;
+
+    Ok(Response {
+        data: json!(deployment),
     })
 }

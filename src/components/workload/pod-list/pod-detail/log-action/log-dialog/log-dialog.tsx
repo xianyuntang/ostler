@@ -1,19 +1,11 @@
-import CloseTwoToneIcon from "@suid/icons-material/CloseTwoTone";
-import {
-  AppBar,
-  Box,
-  Dialog,
-  DialogContent,
-  IconButton,
-  Toolbar,
-  Typography,
-} from "@suid/material";
+import { Box, Dialog, DialogContent } from "@suid/material";
 import { listen, UnlistenFn } from "@tauri-apps/api/event";
 import { Component, createSignal, onCleanup, onMount } from "solid-js";
 
 import { futureService, podService } from "../../../../../../services";
 import { useKubeStore } from "../../../../../../stores";
-import { useTerminal } from "../../../terminal/terminal";
+import DialogBar from "../../../../../shared/terminal/dialog-bar";
+import { useTerminal } from "../../../../../shared/terminal/terminal";
 
 interface LogDialogProps {
   onClose: () => void;
@@ -61,23 +53,7 @@ const LogDialog: Component<LogDialogProps> = (props) => {
 
   return (
     <Dialog fullScreen open onClose={props.onClose}>
-      <AppBar position="static">
-        <Toolbar>
-          <IconButton onClick={props.onClose}>
-            <CloseTwoToneIcon sx={{ color: "white" }} color="primary" />
-          </IconButton>
-          <Typography
-            flexGrow={1}
-            sx={{
-              ml: 2,
-            }}
-            variant="h6"
-          >
-            Logs
-          </Typography>
-        </Toolbar>
-      </AppBar>
-
+      <DialogBar title="Log" onClose={props.onClose} />
       <DialogContent>
         <Box height="calc(100% - 40px)" width="100%">
           <Box ref={setContainerRef} height="100%" width="100%" />
