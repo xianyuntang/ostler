@@ -66,9 +66,6 @@ jobs:
           profile: minimal
           target: ${{ matrix.target }}
 
-      - name: Install additional target
-        run: rustup target add ${{ matrix.target }}
-
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
