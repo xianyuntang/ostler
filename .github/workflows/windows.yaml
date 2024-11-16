@@ -1,4 +1,4 @@
-name: Build CI
+name: Build Windows Binary
 
 on:
   push:
@@ -11,7 +11,12 @@ on:
       - main
 
 jobs:
-  build-mac:
+  build:
+    strategy:
+      matrix:
+        target:
+          - x86_64-pc-windows-msvc
+
     runs-on: windows-latest
 
     steps:
@@ -24,6 +29,9 @@ jobs:
           toolchain: stable
           profile: minimal
 
+      - name: Install additional target
+        run: rustup target add ${{ matrix.target }}
+
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
@@ -32,5 +40,12 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Build Tauri app
+      - name: Build Ostler
         run: npm run tauri build
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: ostler-macos-${{ matrix.target }}
+          path: |
+            src-tauri/target/${{ matrix.target }}/release/dmg/*.dmg

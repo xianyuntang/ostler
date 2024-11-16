@@ -1,4 +1,4 @@
-name: Build CI
+name: Build Macos Binary
 
 on:
   push:
@@ -11,7 +11,7 @@ on:
       - main
 
 jobs:
-  build-mac:
+  build:
     strategy:
       matrix:
         target:
@@ -41,5 +41,12 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Build Tauri app
+      - name: Build Ostler
         run: npm run tauri build -- --target ${{ matrix.target }}
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: ostler-macos-${{ matrix.target }}
+          path: |
+            src-tauri/target/${{ matrix.target }}/release/dmg/*.dmg
