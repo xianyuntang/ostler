@@ -14,13 +14,12 @@ jobs:
   build:
     strategy:
       matrix:
-        platform: [macos-latest, ubuntu-latest, windows-latest]
         target:
           - aarch64-apple-darwin
           - x86_64-apple-darwin
           - x86_64-pc-windows-msvc
           - x86_64-unknown-linux-gnu
-    runs-on: ${{ matrix.platform }}
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout code
@@ -33,8 +32,7 @@ jobs:
           profile: minimal
           target: ${{ matrix.target }}
 
-      - name: Install additional target (Linux and Windows)
-        if: ${{ matrix.platform == 'ubuntu-latest' || matrix.platform == 'windows-latest' }}
+      - name: Install additional target
         run: rustup target add ${{ matrix.target }}
 
       - name: Set up Node.js
@@ -44,9 +42,6 @@ jobs:
 
       - name: Install dependencies
         run: npm install
-
-      - name: Install Tauri dependencies
-        run: npm run tauri deps
 
       - name: Build Tauri app
         run: npm run tauri build -- --target ${{ matrix.target }}
