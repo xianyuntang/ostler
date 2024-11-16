@@ -47,7 +47,7 @@ jobs:
           name: ostler-macos-${{ matrix.target }}
           path: |
             src-tauri/target/${{ matrix.target }}/release/bundle/**/*
-  linux:
+  windows:
     strategy:
       matrix:
         target:
@@ -80,6 +80,6 @@ jobs:
       - name: Upload Artifact
         uses: actions/upload-artifact@v3
         with:
-          name: ostler-macos-${{ matrix.target }}
+          name: ostler-windows-${{ matrix.target }}
           path: |
             src-tauri/target/${{ matrix.target }}/release/bundle/**/*
