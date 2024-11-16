@@ -82,4 +82,4 @@ jobs:
         with:
           name: ostler-windows-${{ matrix.target }}
           path: |
-            src-tauri/target/${{ matrix.target }}/release/bundle/**/*
+            src-tauri/target/**/*
