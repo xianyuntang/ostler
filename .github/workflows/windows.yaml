@@ -11,14 +11,8 @@ on:
       - main
 
 jobs:
-  build:
-    strategy:
-      matrix:
-        target:
-          - aarch64-apple-darwin
-          - x86_64-apple-darwin
-          - x86_64-pc-windows-msvc
-    runs-on: ubuntu-latest
+  build-mac:
+    runs-on: windows-latest
 
     steps:
       - name: Checkout code
@@ -29,10 +23,6 @@ jobs:
         with:
           toolchain: stable
           profile: minimal
-          target: ${{ matrix.target }}
-
-      - name: Install additional target
-        run: rustup target add ${{ matrix.target }}
 
       - name: Set up Node.js
         uses: actions/setup-node@v3
@@ -43,4 +33,4 @@ jobs:
         run: npm install
 
       - name: Build Tauri app
-        run: npm run tauri build -- --target ${{ matrix.target }}
+        run: npm run tauri build
