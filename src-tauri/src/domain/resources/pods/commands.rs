@@ -127,7 +127,7 @@ pub async fn start_exec_stream(
         ..Default::default()
     };
 
-    let command = vec!["sh"];
+    let command = vec!["/bin/bash"];
 
     let mut attached: kube::api::AttachedProcess =
         api.exec(pod_name, command, &attach_params).await?;
