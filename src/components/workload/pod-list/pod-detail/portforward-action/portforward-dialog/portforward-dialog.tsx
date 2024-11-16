@@ -1,4 +1,5 @@
 import {
+  Alert,
   Button,
   Dialog,
   DialogActions,
@@ -8,8 +9,9 @@ import {
   TextField,
 } from "@suid/material";
 import { ChangeEvent } from "@suid/types";
-import { Component, createSignal, onMount } from "solid-js";
+import { Component, createSignal, onMount, Show } from "solid-js";
 
+import { isInvokerError } from "../../../../../../core/invoker.ts";
 import { podService } from "../../../../../../services";
 import { Pod } from "../../../../../../services/pod.ts";
 import { useKubeStore, usePortforwardStore } from "../../../../../../stores";
@@ -25,6 +27,9 @@ interface PortforwardDialogProps {
 const PortforwardDialog: Component<PortforwardDialogProps> = (props) => {
   const [containerPort, setContainerPort] = createSignal<string>("");
   const [localPort, setLocalPort] = createSignal<string>("");
+  const [errorMessage, setErrorMessage] = createSignal<string | undefined>(
+    undefined
+  );
 
   const context = useKubeStore((state) => state.context);
   const namespace = useKubeStore((state) => state.namespace);
@@ -36,14 +41,20 @@ const PortforwardDialog: Component<PortforwardDialogProps> = (props) => {
   });
 
   const handlePortforwardClick = async () => {
-    const { futureId } = await podService.startPortforward(
-      namespace(),
-      props.podName,
-      parseInt(containerPort()),
-      parseInt(localPort())
-    );
-    add(context(), namespace(), props.podName, props.containerName, futureId);
-    props.onClose();
+    try {
+      const { futureId } = await podService.startPortforward(
+        namespace(),
+        props.podName,
+        parseInt(containerPort()),
+        parseInt(localPort())
+      );
+      add(context(), namespace(), props.podName, props.containerName, futureId);
+      props.onClose();
+    } catch (e) {
+      if (isInvokerError(e)) {
+        setErrorMessage(e.message);
+      }
+    }
   };
 
   const handleContainerPortChange = (
@@ -61,31 +72,37 @@ const PortforwardDialog: Component<PortforwardDialogProps> = (props) => {
   };
 
   return (
-    <Dialog open={props.open} onClose={props.onClose}>
-      <DialogTitle>Portforward</DialogTitle>
-      <DialogContent>
-        <FormControl fullWidth>
-          <TextField
-            label="Container Port"
-            variant="standard"
-            value={containerPort()}
-            onChange={handleContainerPortChange}
-          />
-        </FormControl>
-        <FormControl fullWidth>
-          <TextField
-            label="Local Port"
-            variant="standard"
-            value={localPort()}
-            onChange={handleLocalPortChange}
-          />
-        </FormControl>
-      </DialogContent>
-      <DialogActions>
-        <Button onClick={props.onClose}>Cancel</Button>
-        <Button onClick={handlePortforwardClick}>Start</Button>
-      </DialogActions>
-    </Dialog>
+    <>
+      <Dialog open={props.open} onClose={props.onClose}>
+        <DialogTitle>Portforward</DialogTitle>
+        <DialogContent>
+          <FormControl fullWidth>
+            <TextField
+              label="Container Port"
+              variant="standard"
+              value={containerPort()}
+              onChange={handleContainerPortChange}
+            />
+          </FormControl>
+          <FormControl fullWidth>
+            <TextField
+              label="Local Port"
+              variant="standard"
+              value={localPort()}
+              onChange={handleLocalPortChange}
+            />
+          </FormControl>
+          <Show when={errorMessage()}>
+            <Alert severity="error">{errorMessage()}</Alert>
+          </Show>
+        </DialogContent>
+
+        <DialogActions>
+          <Button onClick={props.onClose}>Cancel</Button>
+          <Button onClick={handlePortforwardClick}>Start</Button>
+        </DialogActions>
+      </Dialog>
+    </>
   );
 };
 
