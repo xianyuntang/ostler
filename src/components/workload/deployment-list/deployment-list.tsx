@@ -1,4 +1,5 @@
 import {
+  Alert,
   Box,
   CircularProgress,
   Table,
@@ -7,13 +8,15 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-  Typography,
+  TextField,
+  Toolbar,
 } from "@suid/material";
 import { green, orange, red } from "@suid/material/colors";
+import { ChangeEvent } from "@suid/types";
 import { createQuery } from "@tanstack/solid-query";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
-import { For, Match, Switch } from "solid-js";
+import { createSignal, For, Match, Switch } from "solid-js";
 
 import { deploymentService } from "../../../services";
 import { useKubeStore } from "../../../stores";
@@ -21,6 +24,8 @@ import DescribeAction from "./describe-action";
 dayjs.extend(relativeTime);
 
 const DeploymentList = () => {
+  const [filter, setFilter] = createSignal<string>("");
+
   const context = useKubeStore((state) => state.context);
   const namespace = useKubeStore((state) => state.namespace);
 
@@ -45,6 +50,13 @@ const DeploymentList = () => {
     );
   };
 
+  const handleFilterChange = (
+    _: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+    value: string
+  ) => {
+    setFilter(value);
+  };
+
   return (
     <Switch>
       <Match when={query.isLoading}>
@@ -53,23 +65,35 @@ const DeploymentList = () => {
         </Box>
       </Match>
       <Match when={query.isError}>
-        <Box>
-          <Typography>Error: {query.error?.message}</Typography>
-        </Box>
+        <Alert severity="error">{query.error?.message}</Alert>
       </Match>
       <Match when={query.isSuccess}>
+        <Toolbar>
+          <TextField
+            size="small"
+            label="Filter"
+            autoComplete="off"
+            value={filter()}
+            onChange={handleFilterChange}
+            variant="standard"
+          />
+        </Toolbar>
         <TableContainer>
-          <Table>
+          <Table sx={{ minWidth: 865 }}>
             <TableHead>
               <TableRow>
                 <TableCell sx={{ width: "20em" }}>Name</TableCell>
                 <TableCell sx={{ width: "10em" }}>Status</TableCell>
-                <TableCell>Age</TableCell>
+                <TableCell sx={{ width: "10em" }}>Age</TableCell>
                 <TableCell>Action</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
-              <For each={deployments()}>
+              <For
+                each={deployments()?.filter((deployment) =>
+                  deployment.metadata.name.includes(filter())
+                )}
+              >
                 {(deployment) => (
                   <TableRow
                     sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
@@ -92,7 +116,6 @@ const DeploymentList = () => {
                     <TableCell>
                       <DescribeAction name={deployment.metadata.name} />
                     </TableCell>
-                    <TableCell />
                   </TableRow>
                 )}
               </For>

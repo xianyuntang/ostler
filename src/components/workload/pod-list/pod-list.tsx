@@ -1,5 +1,6 @@
 import DeleteOutlineTwoToneIcon from "@suid/icons-material/DeleteOutlineTwoTone";
 import {
+  Alert,
   Box,
   IconButton,
   LinearProgress,
@@ -9,8 +10,10 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-  Typography,
+  TextField,
+  Toolbar,
 } from "@suid/material";
+import { ChangeEvent } from "@suid/types";
 import { createQuery } from "@tanstack/solid-query";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
@@ -27,6 +30,8 @@ const PodList = () => {
   const [selectedPod, setSelectedPod] = createSignal<podService.Pod | null>(
     null
   );
+  const [filter, setFilter] = createSignal<string>("");
+
   const context = useKubeStore((state) => state.context);
   const namespace = useKubeStore((state) => state.namespace);
 
@@ -57,6 +62,13 @@ const PodList = () => {
     await query.refetch();
   };
 
+  const handleFilterChange = (
+    _: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+    value: string
+  ) => {
+    setFilter(value);
+  };
+
   return (
     <Box>
       <Switch>
@@ -64,21 +76,35 @@ const PodList = () => {
           <LinearProgress />
         </Match>
         <Match when={query.isError}>
-          <Typography>Error: {query.error?.message}</Typography>
+          <Alert severity="error">{query.error?.message}</Alert>
         </Match>
         <Match when={query.isSuccess}>
+          <Toolbar>
+            <TextField
+              size="small"
+              label="Filter"
+              autoComplete="off"
+              value={filter()}
+              onChange={handleFilterChange}
+              variant="standard"
+            />
+          </Toolbar>
           <TableContainer>
             <Table>
               <TableHead>
                 <TableRow>
                   <TableCell sx={{ width: "20em" }}>Name</TableCell>
                   <TableCell sx={{ width: "10em" }}>Status</TableCell>
-                  <TableCell>Age</TableCell>
+                  <TableCell sx={{ width: "10em" }}>Age</TableCell>
                   <TableCell>Action</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
-                <For each={pods()}>
+                <For
+                  each={pods()?.filter((pod) =>
+                    pod.metadata.name.includes(filter())
+                  )}
+                >
                   {(pod) => (
                     <TableRow onclick={() => handleRowClick(pod)}>
                       <TableCell>{pod.metadata.name}</TableCell>
