@@ -11,13 +11,49 @@ on:
       - main
 
 jobs:
-  build:
+  macos:
     strategy:
       matrix:
         target:
           - aarch64-apple-darwin
           - x86_64-apple-darwin
     runs-on: macos-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          profile: minimal
+          target: ${{ matrix.target }}
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "20.9.0"
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build Ostler
+        run: npm run tauri build -- --target ${{ matrix.target }}
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: ostler-macos-${{ matrix.target }}
+          path: |
+            src-tauri/target/${{ matrix.target }}/release/bundle/**/*
+  linux:
+    strategy:
+      matrix:
+        target:
+          - x86_64-pc-windows-msvc
+
+    runs-on: windows-latest
 
     steps:
       - name: Checkout code
@@ -42,7 +78,7 @@ jobs:
         run: npm install
 
       - name: Build Ostler
-        run: npm run tauri build -- --target ${{ matrix.target }}
+        run: npm run tauri build
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v3
