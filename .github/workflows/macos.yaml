@@ -49,4 +49,4 @@ jobs:
         with:
           name: ostler-macos-${{ matrix.target }}
           path: |
-            src-tauri/target/${{ matrix.target }}/release/dmg/*.dmg
+            src-tauri/target/${{ matrix.target }}/release/bundle/**/*
