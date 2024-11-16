@@ -1,0 +1,52 @@
+name: Node.js CI
+
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - "[0-9]+.[0-9]+.[0-9]+"
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        platform: [macos-latest, ubuntu-latest, windows-latest]
+        target:
+          - aarch64-apple-darwin
+          - x86_64-apple-darwin
+          - x86_64-pc-windows-msvc
+          - x86_64-unknown-linux-gnu
+    runs-on: ${{ matrix.platform }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          profile: minimal
+          target: ${{ matrix.target }}
+
+      - name: Install additional target (Linux and Windows)
+        if: ${{ matrix.platform == 'ubuntu-latest' || matrix.platform == 'windows-latest' }}
+        run: rustup target add ${{ matrix.target }}
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "20.9.0"
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Install Tauri dependencies
+        run: npm run tauri deps
+
+      - name: Build Tauri app
+        run: npm run tauri build -- --target ${{ matrix.target }}
