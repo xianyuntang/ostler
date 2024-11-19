@@ -22,32 +22,9 @@ pub async fn add_context(
         .read_to_string(&mut kubeconfig_content)
         .await?;
 
-    app_data.client_manager.add(&kubeconfig_content)?;
+    app_data.client_manager.add(&kubeconfig_content).await?;
 
     let kubeconfig_contents = app_data.client_manager.to_vec()?;
-
-    app_data
-        .store
-        .set("kubeconfig_contents", kubeconfig_contents);
-
-    Ok(Response {
-        data: json!({"message":"ok"}),
-    })
-}
-
-#[tauri::command]
-pub async fn remove_context(
-    state: State<'_, Mutex<AppData>>,
-    context: &str,
-) -> Result<Response, ApiError> {
-    log::debug!("list_contexts called");
-
-    let mut app_data = state.lock().await;
-
-    app_data.client_manager.remove(context)?;
-
-    let kubeconfig_contents = app_data.client_manager.to_vec()?;
-
     app_data
         .store
         .set("kubeconfig_contents", kubeconfig_contents);
@@ -64,6 +41,8 @@ pub async fn list_contexts(state: State<'_, Mutex<AppData>>) -> Result<Response,
     let app_data = state.lock().await;
 
     let contexts = app_data.client_manager.list_contexts();
+
+    println!("{:#?}", contexts);
 
     Ok(Response {
         data: json!({"contexts":contexts}),

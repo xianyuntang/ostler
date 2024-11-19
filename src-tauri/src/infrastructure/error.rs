@@ -4,6 +4,8 @@ use kube;
 use log;
 use serde_json::json;
 
+use crate::domain::client::kubeconfig_key::KubeconfigKeyError;
+
 #[derive(Debug, thiserror::Error)]
 pub enum ApiError {
     #[error(transparent)]
@@ -20,6 +22,9 @@ pub enum ApiError {
 
     #[error(transparent)]
     Kubeconfig(#[from] kube::config::KubeconfigError),
+
+    #[error("kubeconfig key error")]
+    KubeconfigKey(#[from] KubeconfigKeyError),
 
     #[error(transparent)]
     Join(#[from] tokio::task::JoinError),

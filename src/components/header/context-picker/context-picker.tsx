@@ -1,4 +1,3 @@
-import DeleteForeverTwoToneIcon from "@suid/icons-material/DeleteForeverTwoTone";
 import FileUploadTwoToneIcon from "@suid/icons-material/FileUploadTwoTone";
 import {
   Box,
@@ -54,11 +53,6 @@ const ContextPicker = () => {
     }
   };
 
-  const handleRemoveContext = async () => {
-    await contextService.removeContext(context());
-    await query.refetch();
-  };
-
   return (
     <Stack direction="row" spacing={1}>
       <Box width="240px">
@@ -77,9 +71,6 @@ const ContextPicker = () => {
 
       <IconButton onclick={handleAddNewContext}>
         <FileUploadTwoToneIcon color="primary" />
-      </IconButton>
-      <IconButton onclick={handleRemoveContext}>
-        <DeleteForeverTwoToneIcon color="primary" />
       </IconButton>
     </Stack>
   );

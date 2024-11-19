@@ -1,57 +1,83 @@
+use std::str::FromStr;
+
 use indexmap::IndexMap;
 use kube::config::{KubeConfigOptions, Kubeconfig};
 use kube::{Client, Config};
+use nanoid::nanoid;
 
+use crate::domain::client::kubeconfig_key::KubeconfigKey;
 use crate::infrastructure::error::ApiError;
 
 pub struct ClientManager {
-    current_kubeconfig: Option<Kubeconfig>,
-    available_kubeconfigs: IndexMap<String, Kubeconfig>,
+    current_kubeconfig: Option<KubeconfigKey>,
+    kubeconfig_contents: IndexMap<String, Kubeconfig>,
+    available_configs: IndexMap<KubeconfigKey, Config>,
 }
 
 impl ClientManager {
     pub fn new() -> Self {
         Self {
             current_kubeconfig: None,
-            available_kubeconfigs: IndexMap::new(),
+            kubeconfig_contents: IndexMap::new(),
+            available_configs: IndexMap::new(),
         }
     }
     pub fn from_vec(kubeconfig_contents: &Vec<String>) -> Self {
         let mut manager = Self::new();
-        let _ = manager.add_all(kubeconfig_contents);
+
+        let runtime = tokio::runtime::Runtime::new().unwrap();
+        runtime.block_on(async {
+            let _ = manager.add_all(kubeconfig_contents).await;
+        });
+
         manager
     }
 }
 
 impl ClientManager {
-    pub fn add(&mut self, kubeconfig_content: &str) -> Result<(), ApiError> {
+    pub async fn add(&mut self, kubeconfig_content: &str) -> Result<(), ApiError> {
         if let Ok(kubeconfig) = Kubeconfig::from_yaml(kubeconfig_content) {
-            let context = kubeconfig.contexts[0].clone();
+            let cloned_named_contexts = kubeconfig.contexts.clone();
 
-            log::info!("{} was added ", context.name);
-            self.available_kubeconfigs
-                .entry(context.name)
+            for named_context in cloned_named_contexts {
+                let named_context_clone = named_context.clone();
+                let context = named_context_clone.name;
+                let user = named_context_clone.context.clone().unwrap().user;
+                let cluster = named_context_clone.context.clone().unwrap().cluster;
+
+                let kubeconfig_option = KubeConfigOptions {
+                    context: Some(context.clone()),
+                    cluster: Some(cluster.clone()),
+                    user: Some(user.clone()),
+                };
+                let mut config =
+                    Config::from_custom_kubeconfig(kubeconfig.clone(), &kubeconfig_option).await?;
+                config.accept_invalid_certs = true;
+                println!("{:#?}", config);
+                log::info!("add config context: {context} cluster: {cluster} user: {user}");
+                self.available_configs
+                    .entry(KubeconfigKey(context, user))
+                    .or_insert(config);
+            }
+            self.kubeconfig_contents
+                .entry(nanoid!())
                 .or_insert(kubeconfig);
-        }
+        };
         Ok(())
     }
 
-    pub fn add_all(&mut self, kubeconfig_contents: &Vec<String>) -> Result<(), ApiError> {
+    pub async fn add_all(&mut self, kubeconfig_contents: &Vec<String>) -> Result<(), ApiError> {
         for kubeconfig_content in kubeconfig_contents {
-            self.add(kubeconfig_content)?
+            println!("{}", kubeconfig_content);
+            self.add(kubeconfig_content).await?
         }
 
-        Ok(())
-    }
-
-    pub fn remove(&mut self, context: &str) -> Result<(), ApiError> {
-        self.available_kubeconfigs.shift_remove(context);
         Ok(())
     }
 
     pub fn to_vec(&self) -> Result<Vec<String>, ApiError> {
         let mut kubeconfig_contents = self
-            .available_kubeconfigs
+            .kubeconfig_contents
             .values()
             .map(serde_yaml::to_string)
             .collect::<Result<Vec<String>, _>>()?;
@@ -64,40 +90,31 @@ impl ClientManager {
 
 impl ClientManager {
     pub fn list_contexts(&self) -> Vec<String> {
-        self.available_kubeconfigs.keys().cloned().collect()
+        self.available_configs
+            .keys()
+            .cloned()
+            .map(|key| key.to_string())
+            .collect()
     }
 
-    pub fn switch_context(&mut self, context: &str) -> Result<(), ApiError> {
-        log::debug!("KUBECONFIG {} has been loaded", context);
-        if let Some(kubeconfig) = self.available_kubeconfigs.get(context) {
-            self.current_kubeconfig = Some(kubeconfig.to_owned());
+    pub fn switch_context(&mut self, kubeconfig_key: &str) -> Result<(), ApiError> {
+        let kubeconfig_key = KubeconfigKey::from_str(kubeconfig_key)?;
+        log::debug!("KUBECONFIG {:?} has been loaded", kubeconfig_key);
+        if self.available_configs.get(&kubeconfig_key).is_some() {
+            self.current_kubeconfig = Some(kubeconfig_key.clone());
             return Ok(());
         }
         Err(ApiError::NotFound {
-            item: format!("context '{}'", context),
+            item: format!("context '{:#?}'", kubeconfig_key),
         })
     }
 }
 
 impl ClientManager {
     pub async fn get_client(&self) -> Result<Client, ApiError> {
-        if let Some(kubeconfig) = self.current_kubeconfig.clone() {
-            if let Some(named_context) = kubeconfig.contexts.first() {
-                log::debug!("Get kube client {}", named_context.name);
-                let context_clone = named_context.context.clone().unwrap();
-                let context = named_context.clone().name;
-                let cluster = context_clone.cluster;
-                let user = context_clone.user;
-                let kubeconfig_option = KubeConfigOptions {
-                    context: Some(context),
-                    cluster: Some(cluster),
-                    user: Some(user),
-                };
-
-                let mut config =
-                    Config::from_custom_kubeconfig(kubeconfig, &kubeconfig_option).await?;
-                config.accept_invalid_certs = true;
-                return Ok(Client::try_from(config)?);
+        if let Some(kubeconfig_key) = self.current_kubeconfig.clone() {
+            if let Some(config) = self.available_configs.get(&kubeconfig_key) {
+                return Ok(Client::try_from(config.clone())?);
             };
         };
         Err(ApiError::NotFound {

@@ -3,9 +3,7 @@ mod infrastructure;
 
 use crate::domain::client::client_manager::ClientManager;
 use crate::domain::future::commands::stop_future;
-use crate::domain::resources::contexts::commands::{
-    add_context, list_contexts, remove_context, switch_context,
-};
+use crate::domain::resources::contexts::commands::{add_context, list_contexts, switch_context};
 use crate::domain::resources::deployments::commands::{describe_deployment, list_deployments};
 use crate::domain::resources::namespaces::commands::list_namespaces;
 use crate::domain::resources::pods::commands::{
@@ -53,7 +51,6 @@ pub fn run() {
             list_contexts,
             switch_context,
             add_context,
-            remove_context,
             // namespace
             list_namespaces,
             // pod
