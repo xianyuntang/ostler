@@ -1,3 +1,3 @@
-pub(crate) mod client;
-pub(crate) mod future;
-pub(crate) mod resources;
+pub mod client;
+pub mod future;
+pub mod resources;

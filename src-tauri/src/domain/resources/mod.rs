@@ -1,4 +1,4 @@
-pub(crate) mod contexts;
-pub(crate) mod deployments;
-pub(crate) mod namespaces;
-pub(crate) mod pods;
+pub mod contexts;
+pub mod deployments;
+pub mod namespaces;
+pub mod pods;

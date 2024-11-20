@@ -1,2 +1,2 @@
 mod attached;
-pub(crate) mod commands;
+pub mod commands;
