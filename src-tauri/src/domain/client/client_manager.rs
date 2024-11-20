@@ -50,11 +50,13 @@ impl ClientManager {
                     cluster: Some(cluster.clone()),
                     user: Some(user.clone()),
                 };
+
                 let mut config =
                     Config::from_custom_kubeconfig(kubeconfig.clone(), &kubeconfig_option).await?;
                 config.accept_invalid_certs = true;
-                println!("{:#?}", config);
+
                 log::info!("add config context: {context} cluster: {cluster} user: {user}");
+
                 self.available_configs
                     .entry(KubeconfigKey(context, user))
                     .or_insert(config);
@@ -68,7 +70,6 @@ impl ClientManager {
 
     pub async fn add_all(&mut self, kubeconfig_contents: &Vec<String>) -> Result<(), ApiError> {
         for kubeconfig_content in kubeconfig_contents {
-            println!("{}", kubeconfig_content);
             self.add(kubeconfig_content).await?
         }
 
